@@ -24,6 +24,8 @@ func_leaf1 (void)
   register int interrupt_a7 asm ("a7");
   register int interrupt_t3 asm ("t3");
   register int interrupt_t4 asm ("t4");
+/* { dg-final { scan-assembler "th.ipush" } }*/
+/* { dg-final { scan-assembler "th.ipop" } }*/
 
   interrupt_t1++;
   interrupt_t2++;

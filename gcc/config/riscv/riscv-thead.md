@@ -191,7 +191,7 @@
 			     (match_operand 2 "const_6bit_operand" "QcL")
 			     (match_operand 3 "const_6bit_operand" "QcL")))]
   "TARGET_XTHEAD_EXT && TARGET_64BIT"
-  "ext\t%0,%1,%2+%3-1,%3"
+  "th.ext\t%0,%1,%2+%3-1,%3"
   [(set_attr "type" "arith")
    (set_attr "mode" "DI")])
 
@@ -207,7 +207,7 @@
 	operands[4] = GEN_INT ((1 << INTVAL (operands[2])) - 1);
 	return "andi\t%0,%1,%4";
       }
-    return "extu\t%0,%1,%3+%2-1,%3";
+    return "th.extu\t%0,%1,%3+%2-1,%3";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "DI")])
@@ -218,7 +218,7 @@
 			 (match_operand 2 "const_int_operand" "K")
 			 (match_operand 3 "const_int_operand" "K")))]
   "TARGET_XTHEAD_EXT && !TARGET_64BIT"
-  "ext\t%0,%1,%2+%3-1,%3"
+  "th.ext\t%0,%1,%2+%3-1,%3"
   [(set_attr "type" "arith")
    (set_attr "mode" "SI")])
 
@@ -234,7 +234,7 @@
 	operands[4] = GEN_INT ((1 << INTVAL (operands[2])) - 1);
 	return "andi\t%0,%1,%4";
       }
-    return "extu\t%0,%1,%3+%2-1,%3";
+    return "th.extu\t%0,%1,%3+%2-1,%3";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "SI")])
@@ -251,7 +251,7 @@
   {
     operands[3] = GEN_INT (exact_log2 ((INTVAL (operands[3]) >> INTVAL (operands[2])) + 1)
 		  - INTVAL (operands[2]));
-    return "extu\t%0,%1,%3,0";
+    return "th.extu\t%0,%1,%3,0";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "<MODE>")]
@@ -337,7 +337,7 @@
   "TARGET_64BIT && TARGET_XTHEAD_EXT"
   {
     operands[2] = GEN_INT (GET_MODE_BITSIZE (<MODE>mode) - 1);
-    return "extu\t%0,%1,%2,0";
+    return "th.extu\t%0,%1,%2,0";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "DI")])
@@ -349,7 +349,7 @@
   "TARGET_XTHEAD_EXT"
   {
     operands[2] = GEN_INT (GET_MODE_BITSIZE (HImode) - 1);
-    return "extu\t%0,%1,%2,0";
+    return "th.extu\t%0,%1,%2,0";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "SI")])
@@ -361,7 +361,7 @@
 	(plus:DI (zero_extend:DI (match_operand:SI 2 "register_operand" "r"))
 		 (match_operand:DI 1 "register_operand" "r")))]
   "TARGET_XTHEAD_ADDSLUW"
-  "addsluw.b\t%0, %1, %2"
+  "th.addsluw.b\t%0, %1, %2"
   [(set_attr "type" "arith")]
 )
 
@@ -372,7 +372,7 @@
 		   (const_int 1)) (const_int 8589934590))
 		 (match_operand:DI 1 "register_operand" "r")))]
   "TARGET_XTHEAD_ADDSLUW"
-  "addsluw.h\t%0, %1, %2"
+  "th.addsluw.h\t%0, %1, %2"
   [(set_attr "type" "arith")]
 )
 
@@ -383,7 +383,7 @@
 		   (const_int 2)) (const_int 17179869180))
 		 (match_operand:DI 1 "register_operand" "r")))]
   "TARGET_XTHEAD_ADDSLUW"
-  "addsluw.w\t%0, %1, %2"
+  "th.addsluw.w\t%0, %1, %2"
   [(set_attr "type" "arith")]
 )
 
@@ -394,7 +394,7 @@
 		   (const_int 3)) (const_int 34359738360))
 		 (match_operand:DI 1 "register_operand" "r")))]
   "TARGET_XTHEAD_ADDSLUW"
-  "addsluw.d\t%0, %1, %2"
+  "th.addsluw.d\t%0, %1, %2"
   [(set_attr "type" "arith")]
 )
 
@@ -404,7 +404,7 @@
 			  (match_operand:QI 3 "const_twobit_operand" "i"))
 		(match_operand:X 1 "register_operand" "r")))]
    "TARGET_XTHEAD_ADDSL"
-   "addsl\t%0, %1, %2, %3"
+   "th.addsl\t%0, %1, %2, %3"
    [(set_attr "type" "arith")]
 )
 
@@ -419,7 +419,7 @@
    {
     operands[3] = gen_rtx_CONST_INT (<MODE>mode,
 				     exact_log2 (INTVAL (operands[3])));
-    return "addsl\t%0, %1, %2, %3";
+    return "th.addsl\t%0, %1, %2, %3";
    }
   [(set_attr "type" "arith")]
 )
@@ -436,7 +436,7 @@
   "TARGET_XTHEAD_EXT"
   {
     operands[2] = GEN_INT (GET_MODE_BITSIZE (<SHORT:MODE>mode) - 1);
-    return "ext\t%0,%1,%2,0";
+    return "th.ext\t%0,%1,%2,0";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "<X:MODE>")])
@@ -482,7 +482,7 @@
 			      (match_operand:X 2 "register_operand" "r"))
 		      (match_operand:X 3 "register_operand" "0")))]
   "TARGET_MUL && TARGET_XTHEAD_MULA"
-  "mula\\t%0,%1,%2"
+  "th.mula\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "<MODE>")]
 )
@@ -493,7 +493,7 @@
 		       (mult:X (match_operand:X 1 "register_operand" "r")
 			       (match_operand:X 2 "register_operand" "r"))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA"
-  "muls\\t%0,%1,%2"
+  "th.muls\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "<MODE>")]
 )
@@ -505,7 +505,7 @@
 			    (match_operand:SI 2 "register_operand" "r"))
 		   (match_operand:SI 3 "register_operand" "0"))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA && TARGET_64BIT"
-  "mulaw\\t%0,%1,%2"
+  "th.mulaw\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -516,7 +516,7 @@
 				(match_operand:SI 2 "register_operand" "r"))
 		       (match_operand:SI 3 "register_operand" "0")))]
   "TARGET_MUL && TARGET_XTHEAD_MULA && TARGET_64BIT"
-  "mulaw\\t%0,%1,%2"
+  "th.mulaw\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -528,7 +528,7 @@
 		    (mult:SI (match_operand:SI 1 "register_operand" "r")
 			     (match_operand:SI 2 "register_operand" "r")))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA && TARGET_64BIT"
-  "mulsw\\t%0,%1,%2"
+  "th.mulsw\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -539,7 +539,7 @@
 		  (mult:SI (match_operand:SI 1 "register_operand" "r")
 			   (match_operand:SI 2 "register_operand" "r"))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA && TARGET_64BIT"
-  "mulsw\\t%0,%1,%2"
+  "th.mulsw\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -550,7 +550,7 @@
 			  (sign_extend:SI (match_operand:HI 2 "register_operand" " r")))
 		 (match_operand:SI 3 "register_operand" " 0")))]
   "TARGET_MUL && TARGET_XTHEAD_MULA"
-  "mulah\\t%0,%1,%2"
+  "th.mulah\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -562,7 +562,7 @@
 			    (sign_extend:SI (match_operand:HI 2 "register_operand" " r")))
 		   (match_operand:SI 3 "register_operand" " 0"))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA && TARGET_64BIT"
-  "mulah\\t%0,%1,%2"
+  "th.mulah\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -573,7 +573,7 @@
 		  (mult:SI (sign_extend:SI (match_operand:HI 1 "register_operand" " r"))
 			   (sign_extend:SI (match_operand:HI 2 "register_operand" " r")))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA"
-  "mulsh\\t%0,%1,%2"
+  "th.mulsh\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -585,7 +585,7 @@
 		    (mult:SI (sign_extend:SI (match_operand:HI 1 "register_operand" " r"))
 			     (sign_extend:SI (match_operand:HI 2 "register_operand" " r"))))))]
   "TARGET_MUL && TARGET_XTHEAD_MULA && TARGET_64BIT"
-  "mulsh\\t%0,%1,%2"
+  "th.mulsh\\t%0,%1,%2"
   [(set_attr "type" "imul")
    (set_attr "mode" "SI")]
 )
@@ -605,7 +605,7 @@
 	(bswap:SI (match_operand:SI 1 "register_operand" "r")))]
   "TARGET_XTHEAD_REVW || (TARGET_XTHEAD_REV && !TARGET_64BIT)"
   {
-    return TARGET_XTHEAD_REVW ? "revw\t%0, %1" : "rev\t%0, %1";
+    return TARGET_XTHEAD_REVW ? "th.revw\t%0, %1" : "th.rev\t%0, %1";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "SI")]
@@ -620,7 +620,7 @@
   [(set (match_operand:DI           0 "register_operand" "=r")
 	(bswap:DI (match_operand:DI 1 "register_operand" "r")))]
   "TARGET_64BIT && TARGET_XTHEAD_REV"
-  "rev\t%0, %1"
+  "th.rev\t%0, %1"
   [(set_attr "type" "arith")
    (set_attr "mode" "DI")]
 )
@@ -644,7 +644,7 @@
   "(TARGET_64BIT && TARGET_XTHEAD_SRRIW)
    || (TARGET_XTHEAD_SRRI && !TARGET_64BIT)"
   {
-    return TARGET_64BIT ? "srriw\t%0, %1, %2" : "srri\t%0, %1, %2";
+    return TARGET_64BIT ? "th.srriw\t%0, %1, %2" : "th.srri\t%0, %1, %2";
   }
   [(set_attr "type" "arith")
    (set_attr "mode" "DI")]
@@ -661,7 +661,7 @@
 	(rotatert:DI (match_operand:DI 1 "register_operand"     "r")
 		     (match_operand:DI 2 "const_int_operand"    "QcL")))]
   "TARGET_64BIT && TARGET_XTHEAD_SRRI"
-  "srri\t%0, %1, %2"
+  "th.srri\t%0, %1, %2"
   [(set_attr "type" "arith")
    (set_attr "mode" "DI")]
 )
@@ -724,8 +724,8 @@
 			  (match_operand:GPR 3 "register_operand"    " 0, r")))]
   "TARGET_XTHEAD_CONDMV"
   "@
-   mveqz\t%0, %z2, %1
-   mvnez\t%0, %3, %1"
+   th.mveqz\t%0, %z2, %1
+   th.mvnez\t%0, %3, %1"
   [(set_attr "type" "arith")]
 )
 
@@ -737,8 +737,8 @@
 			      (match_operand:GPR 3 "register_operand"   " 0, r")))]
   "TARGET_XTHEAD_CONDMV"
   "@
-   mvnez\t%0, %z2, %1
-   mveqz\t%0, %3, %1"
+   th.mvnez\t%0, %z2, %1
+   th.mveqz\t%0, %3, %1"
   [(set_attr "type" "arith")]
 )
 
@@ -788,7 +788,7 @@
   "TARGET_XTHEAD_LDD && TARGET_64BIT
    && rtx_equal_p (plus_constant (Pmode, operands[2], INTVAL (operands[3])),
       plus_constant (Pmode, XEXP (operands[0], 0), GET_MODE_SIZE (DImode)))"
-  "sdd\t%1,%4,(%2),%j3,4"
+  "th.sdd\t%1,%4,(%2),%j3,4"
   [(set_attr "type" "store")
    (set_attr "mode" "DI")])
 
@@ -802,7 +802,7 @@
   "TARGET_XTHEAD_LDD
   && rtx_equal_p (plus_constant (Pmode, operands[2], INTVAL (operands[3])),
       plus_constant (Pmode, XEXP (operands[0], 0), GET_MODE_SIZE (SImode)))"
-  "swd\t%1,%4,(%2),%k3,3"
+  "th.swd\t%1,%4,(%2),%k3,3"
   [(set_attr "type" "store")
    (set_attr "mode" "SI")])
 
@@ -891,7 +891,7 @@
       plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (DImode)))
   && REGNO (operands[0]) != REGNO (operands[3])
   && REGNO (operands[2]) != REGNO (operands[3])"
-  "ldd\t%0,%2,(%3),%j4,4"
+  "th.ldd\t%0,%2,(%3),%j4,4"
   [(set_attr "type" "load")
    (set_attr "mode" "DI")])
 
@@ -907,7 +907,7 @@
       plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
    && REGNO (operands[0]) != REGNO (operands[3])
    && REGNO (operands[2]) != REGNO (operands[3])"
-  "lwd\t%0,%2,(%3),%k4,3"
+  "th.lwd\t%0,%2,(%3),%k4,3"
   [(set_attr "type" "load")
    (set_attr "mode" "SI")])
 
@@ -922,7 +922,7 @@
       plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
    && REGNO (operands[0]) != REGNO (operands[3])
    && REGNO (operands[2]) != REGNO (operands[3])"
-  "lwd\t%0,%2,(%3),%k4,3"
+  "th.lwd\t%0,%2,(%3),%k4,3"
   [(set_attr "type" "load")
    (set_attr "mode" "SI")])
 
@@ -938,7 +938,7 @@
       plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
   && REGNO (operands[0]) != REGNO (operands[3])
   && REGNO (operands[2]) != REGNO (operands[3])"
-  "lwud\t%0,%2,(%3),%k4,3"
+  "th.lwud\t%0,%2,(%3),%k4,3"
   [(set_attr "type" "load")
    (set_attr "mode" "SI")])
 
@@ -973,7 +973,7 @@
    (clobber (reg:SI T6_REGNUM))
    (return)]
   "TARGET_XTHEAD_IPUSH"
-  "ipop")
+  "th.ipop")
 
 (define_insn "riscv_ipush"
   [(unspec_volatile [(const_int 0)] UNSPECV_IPUSH)
@@ -994,7 +994,7 @@
    (use (reg T5_REGNUM))
    (use (reg T6_REGNUM))]
   "TARGET_XTHEAD_IPUSH"
-  "ipush")
+  "th.ipush")
 
 
 ;; C908 has a special acceleration for div and mod. When a div/mod instruction
