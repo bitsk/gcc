@@ -119,7 +119,8 @@ propagate_sext_attribute (void)
 
       FOR_BB_INSNS (bb, insn)
 	{
-	  if (single_set (insn)
+	  if (NONJUMP_INSN_P (insn)
+	      && GET_CODE (PATTERN (insn)) == SET
 	      && REG_P (SET_DEST (PATTERN (insn))))
 	    {
 	      rtx source = SET_SRC (PATTERN (insn));
@@ -152,12 +153,12 @@ propagate_sext_attribute (void)
 		      && REGNO (reg) != REGNO (XEXP (source, 2)))
 		    {
 		      if (dump_file)
-			fprintf (dump_file, "Skip reg %d\n", REGNO (reg));
+			fprintf (dump_file, "\tSkip reg %d in condition evaluation\n", REGNO (reg));
 		      continue;
 		    }
 
 		  if (dump_file)
-		    fprintf (dump_file, "Use reg %d\n", REGNO (reg));
+		    fprintf (dump_file, "\tParse use reg %d\n", REGNO (reg));
 
 		  for (defs = DF_REF_CHAIN (use); defs; defs = defs->next)
 		    {
@@ -169,14 +170,27 @@ propagate_sext_attribute (void)
 		      ref_insn = DF_REF_INSN (defs->ref);
 
 		      if (!bitmap_bit_p (sext_marked, INSN_UID (ref_insn)))
-			can_propagate = false;
-
-		      if (dump_file)
 			{
-			  if (bitmap_bit_p (sext_marked, INSN_UID (ref_insn)))
-			    fprintf (dump_file, "Def insn %d is sexted\n", INSN_UID (ref_insn));
-			  else
-			    fprintf (dump_file, "Def insn %d is not sexted\n", INSN_UID (ref_insn));
+			  can_propagate = false;
+			  if (dump_file)
+			    fprintf (dump_file, "\t\tDef insn %d is not sexted\n", INSN_UID (ref_insn));
+			  break;
+			}
+		      else
+			{
+			  gcc_assert (NONJUMP_INSN_P (ref_insn)
+				      && GET_CODE (PATTERN (ref_insn)) == SET
+				      && REG_P (SET_DEST (PATTERN (ref_insn))));
+			  if (REGNO (reg) != REGNO (SET_DEST (PATTERN (ref_insn))))
+			    {
+			      can_propagate = false;
+			      if (dump_file)
+				fprintf (dump_file, "\t\tDef insn %d is not sexted(def reg is not dest of set insn)\n",
+					 INSN_UID (ref_insn));
+			      break;
+			    }
+			  else if (dump_file)
+			    fprintf (dump_file, "\t\tDef insn %d is sexted\n", INSN_UID (ref_insn));
 			}
 		    }
 
@@ -184,16 +198,19 @@ propagate_sext_attribute (void)
 		     It need to promote and cannot mark it sexted.  */
 		  if (!unartificial_refs)
 		    can_propagate = false;
+
+		  if (!can_propagate)
+		    break;
 		}
 
-		if (can_propagate)
-		  {
-		    bitmap_set_bit (sext_marked, INSN_UID (insn));
-		    changed = true;
+	      if (can_propagate)
+		{
+		  bitmap_set_bit (sext_marked, INSN_UID (insn));
+		  changed = true;
 
-		    if (dump_file)
-		      fprintf (dump_file, "Propagate successfully!\n\n");
-		  }
+		 if (dump_file)
+		    fprintf (dump_file, "Propagate successfully!\n\n");
+		}
 	    }
 	}
     }
@@ -231,7 +248,7 @@ can_delete_sext (rtx_insn *insn)
       if (!NONJUMP_INSN_P (use_insn) || GET_CODE (PATTERN (use_insn)) != SET)
 	{
 	  if (dump_file)
-	    fprintf (dump_file, "Use insn %d is not a single set insn, failed!\n",
+	    fprintf (dump_file, "\tUse insn %d is not a single set insn, failed!\n",
 		     INSN_UID (use_insn));
 	  return false;
 	}
@@ -239,7 +256,7 @@ can_delete_sext (rtx_insn *insn)
       if (GET_CODE (SET_SRC (PATTERN (use_insn))) == ASM_OPERANDS)
 	{
 	  if (dump_file)
-	    fprintf (dump_file, "Use insn %d is a asm insn, failed!\n",
+	    fprintf (dump_file, "\tUse insn %d is a asm insn, failed!\n",
 		     INSN_UID (use_insn));
 	  return false;
 	}
@@ -253,7 +270,7 @@ can_delete_sext (rtx_insn *insn)
 	  if (defs_insn != insn)
 	    {
 	      if (dump_file)
-		fprintf (dump_file, "Use insn %d is defined by other insn, failed!\n",
+		fprintf (dump_file, "\tUse insn %d is defined by other insn, failed!\n",
 			 INSN_UID (use_insn));
 	      return false;
 	    }
@@ -272,7 +289,7 @@ can_delete_sext (rtx_insn *insn)
 	      if (DF_REF_REGNO (def_of_use_insn) == REGNO (dest_reg))
 		{
 		  if (dump_file)
-		    fprintf (dump_file, "Use insn %d define the same reg but the dest is not reg, failed!.\n",
+		    fprintf (dump_file, "\tUse insn %d define the same reg but the dest is not reg, failed!.\n",
 			     INSN_UID (use_insn));
 		  return false;
 		}
@@ -282,7 +299,7 @@ can_delete_sext (rtx_insn *insn)
       if (reg_set_trace_p (src_reg, insn, use_insn))
 	{
 	  if (dump_file)
-	    fprintf (dump_file, "The source reg may be changed between sext and insn %d, failed.\n",
+	    fprintf (dump_file, "\tThe source reg may be changed between sext and insn %d, failed.\n",
 		     INSN_UID (use_insn));
 	  return false;
 	}
@@ -294,7 +311,7 @@ can_delete_sext (rtx_insn *insn)
   if (use_insns_list.is_empty ())
     {
       if (dump_file)
-	fprintf (dump_file, "No use insn, delete it.\n");
+	fprintf (dump_file, "\tNo use insn, delete it.\n");
       return true;
     }
   else
@@ -327,13 +344,13 @@ can_delete_sext (rtx_insn *insn)
 	df_insn_rescan (member);
       df_analyze ();
       if (dump_file)
-	fprintf (dump_file, "All uses has been replaced.\n");
+	fprintf (dump_file, "\tAll uses has been replaced.\n");
       return true;
     }
   else
     {
       if (dump_file)
-	fprintf (dump_file, "Found illegal replacement, cancel changes.\n");
+	fprintf (dump_file, "\tFound illegal replacement, cancel changes.\n");
       return false;
     }
 }
@@ -391,12 +408,17 @@ delect_redundancy_sext (void)
 	      int unatificial_defs = 0;
 	      gcc_assert (use);
 
+	      if (dump_file)
+		fprintf (dump_file, "Try to delete insn %d\n", INSN_UID (insn));
+
 	      for (defs = DF_REF_CHAIN (use); defs; defs = defs->next)
 		{
 		  rtx_insn *ref_insn;
 
 		  if (DF_REF_IS_ARTIFICIAL (defs->ref))
 		    {
+		      if (dump_file)
+			fprintf (dump_file, "\tIt's an atificial def, failed!\n");
 		      can_delete = false;
 		      break;
 		    }
@@ -405,14 +427,34 @@ delect_redundancy_sext (void)
 		  if (!bitmap_bit_p (sext_marked, INSN_UID (ref_insn)))
 		    {
 		      can_delete = false;
+		      if (dump_file)
+			fprintf (dump_file, "\tDef insn %d is not sexted, failed!\n",
+				 INSN_UID (ref_insn));
 		      break;
 		    }
 		  else
-		    unatificial_defs ++;
+		    {
+		      gcc_assert (NONJUMP_INSN_P (ref_insn)
+				  && GET_CODE (PATTERN (ref_insn)) == SET
+				  && REG_P (SET_DEST (PATTERN (ref_insn))));
+		      if (REGNO (DF_REF_REG (use)) != REGNO (SET_DEST (PATTERN (ref_insn))))
+			{
+			  if (dump_file)
+			    fprintf (dump_file, "\tDef insn %d is in the sext list but the dest is not reg, failed!.\n",
+				     INSN_UID (ref_insn));
+			  can_delete = false;
+			  break;
+			}
+		      unatificial_defs ++;
+		    }
 		}
 
 	      if (can_delete && !unatificial_defs)
-		can_delete = false;
+		{
+		  if (dump_file)
+		    fprintf (dump_file, "\tNo def found, failed!\n");
+		  can_delete = false;
+		}
 
 	      /* Detect the sequence:
 			lbu rx, (ry, n)
@@ -443,10 +485,16 @@ delect_redundancy_sext (void)
 
 		  if (can_delete && !unatificial_defs)
 		    can_delete = false;
+
+		  if (can_delete && dump_file)
+		    fprintf (dump_file, "\tAll def is lbu, success!\n");
 		}
 
 	      if (can_delete)
 		{
+		  if (dump_file)
+		    fprintf(dump_file, ">>Check all the defs, sext is redundant, try to delete or replace with mv.\n");
+
 		  if (REGNO (dest) == REGNO (XEXP (source, 0)))
 		    {
 		      if (dump_file)
