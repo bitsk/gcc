@@ -16,6 +16,27 @@ static void mark_insn (rtx_insn *insn)
 	     INSN_UID (insn));
 }
 
+static bool
+is_lbhu_insn (rtx_insn * insn)
+{
+  rtx pattern = PATTERN (insn);
+  if (GET_CODE (pattern) == SET)
+    {
+      rtx src = SET_SRC (pattern);
+      rtx dest = SET_DEST (pattern);
+
+      if (GET_MODE (dest) == DImode && GET_CODE (src) == ZERO_EXTEND)
+	{
+	  rtx inner_src = XEXP (src, 0);
+	    if (GET_CODE (inner_src) == MEM && (GET_MODE (inner_src) == QImode
+						|| GET_MODE (inner_src) == HImode))
+	      return true;
+	}
+    }
+
+  return false;
+}
+
 static void init_dsext_data (void)
 {
   basic_block bb;
@@ -64,6 +85,11 @@ static void init_dsext_data (void)
 	      else if (mode == DImode && code == SIGN_EXTEND
 		       && GET_MODE (XEXP (source, 0)) == SImode)
 		mark_insn (insn);
+	      /* The lbu or lhu instructions will unsign-extend after loading,
+		 so that the upper 32 bits are all 0, so it is safe to treat
+		 them as if they have been word sign-extended.  */
+	      else if (is_lbhu_insn (insn))
+	        mark_insn (insn);
 	    }
 	}
     }
@@ -355,26 +381,6 @@ can_delete_sext (rtx_insn *insn)
     }
 }
 
-static bool
-is_lbu_insn (rtx_insn * insn)
-{
-  rtx pattern = PATTERN (insn);
-  if (GET_CODE (pattern) == SET)
-    {
-      rtx src = SET_SRC (pattern);
-      rtx dest = SET_DEST (pattern);
-
-      if (GET_MODE (dest) == DImode && GET_CODE (src) == ZERO_EXTEND)
-	{
-	  rtx inner_src = XEXP (src, 0);
-	    if (GET_CODE (inner_src) == MEM && GET_MODE (inner_src) == QImode)
-	      return true;
-	}
-    }
-
-  return false;
-}
-
 static void
 delect_redundancy_sext (void)
 {
@@ -454,40 +460,6 @@ delect_redundancy_sext (void)
 		  if (dump_file)
 		    fprintf (dump_file, "\tNo def found, failed!\n");
 		  can_delete = false;
-		}
-
-	      /* Detect the sequence:
-			lbu rx, (ry, n)
-			sext.w rz, rx  */
-	      if (!can_delete)
-		{
-		  can_delete = true;
-		  unatificial_defs = 0;
-		  for (defs = DF_REF_CHAIN (use); defs; defs = defs->next)
-		    {
-		      rtx_insn *ref_insn;
-
-		      if (DF_REF_IS_ARTIFICIAL (defs->ref))
-			{
-			  can_delete = false;
-			  break;
-			}
-		      ref_insn = DF_REF_INSN (defs->ref);
-
-		      if (!is_lbu_insn (ref_insn))
-			{
-			  can_delete = false;
-			  break;
-			}
-		      else
-			unatificial_defs ++;
-		    }
-
-		  if (can_delete && !unatificial_defs)
-		    can_delete = false;
-
-		  if (can_delete && dump_file)
-		    fprintf (dump_file, "\tAll def is lbu, success!\n");
 		}
 
 	      if (can_delete)
