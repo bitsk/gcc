@@ -52,16 +52,30 @@
    TARGET_XTHEAD_SE ? "e902" :		\
    "rocket")
 
+#define RISCV_TUNE_C908_P (riscv_microarchitecture == c908)
+
 /* True if VALUE is an unsigned 16-bit number.  */
 #define SMALL_OPERAND_UNSIGNED16(VALUE) \
   (((VALUE) & ~(unsigned HOST_WIDE_INT) 0xffff) == 0)
 
-#define TARGET_XTHEAD_INTERRUPT_HANDLER_P() \
+#define TARGET_XTHEAD_INTERRUPT_HANDLER_P  \
   (cfun->machine->interrupt_handler_p \
-   && !crtl->is_leaf \
-   && TARGET_XTHEAD_IPUSH \
-   && (cfun->machine->interrupt_mode == USER_MODE \
-       || cfun->machine->interrupt_mode == MACHINE_MODE))
+   && (cfun->machine->interrupt_flags.interrupt_mode == USER_MODE \
+       || cfun->machine->interrupt_flags.interrupt_mode == MACHINE_MODE))
+
+#define TARGET_XTHEAD_INTERRUPT_NESTING \
+  (TARGET_XTHEAD_INTERRUPT_HANDLER_P \
+   && (TARGET_XTHEAD_IPUSH \
+       || cfun->machine->interrupt_flags.thead_clic_preemptible_p))
+
+#define TARGET_XTHEAD_INTERRUPT_NESTING_IPUSH \
+  (TARGET_XTHEAD_INTERRUPT_NESTING \
+   && TARGET_XTHEAD_IPUSH)
+
+#define TARGET_XTHEAD_INTERRUPT_NESTING_CSR \
+  (TARGET_XTHEAD_INTERRUPT_NESTING \
+   && !(TARGET_XTHEAD_INTERRUPT_NESTING_IPUSH \
+	&& riscv_insert_ipush_p ()))
 
 #define TARGET_XTHEAD_DSP (TARGET_DSP || TARGET_ZPN)
 #define TARGET_XTHEAD_ZPN TARGET_ZPN
@@ -72,6 +86,10 @@
 #define TARGET_VECTOR_TEMP(MODE)	gen_rtx_REG (MODE, TARGET_VECTOR_TEMP_REGNUM)
 #define TARGET_VECTOR_TEMP2_REGNUM	(GP_REG_FIRST + 30)
 #define TARGET_VECTOR_TEMP2(MODE)	gen_rtx_REG (MODE, TARGET_VECTOR_TEMP2_REGNUM)
+#define TARGET_MATRIX_TEMP_REGNUM	(GP_REG_FIRST + 29)
+#define TARGET_MATRIX_TEMP(MODE)	gen_rtx_REG (MODE, TARGET_MATRIX_TEMP_REGNUM)
+
+#define TARGET_VECTOR_FIXED (TARGET_VECTOR && riscv_rvv_chunks.is_constant ())
 
 #ifdef IN_TARGET_CODE
 extern const struct riscv_tune_param thead_c908_tune_info;
@@ -115,6 +133,8 @@ riscv_expand_movcc (rtx *operands);
 
 bool
 riscv_save_reg_ipush_p (int regno);
+bool
+riscv_insert_ipush_p (void);
 rtx
 riscv_adjust_ipush_cfi_prologue ();
 
@@ -127,8 +147,14 @@ riscv_classify_address_vector (struct riscv_address_info *info, rtx x,
 bool riscv_dsp_mode (machine_mode mode);
 machine_mode riscv_dsp_preferred_mode (scalar_mode mode);
 
-#endif
+/* Implement Matrix extension.  */
+bool
+riscv_matrix_mode (machine_mode mode);
+bool
+riscv_matrix_x2_mode (machine_mode mode);
 
+void
+emit_libcall_insn_for_convert (rtx dest, rtx src, bool unsigned_p = false);
 #define ARCH_SPEC \
   "%{march=rv64imac_xtheadc:xthead}" \
   "%{march=rv64ima_v0p7_zvamo0p7_zvlsseg0p7_xtheadc:v0p7_xthead}" \
@@ -429,4 +455,5 @@ machine_mode riscv_dsp_preferred_mode (scalar_mode mode);
   "%{march=rv32imafdv_zve32f_zve32x_zve64d_zve64f_zve64x_zvl128b_zvl32b_zvl64b_xtheadc:v_xthead}" \
   "%{march=rv32imafdv_zve32f_zve32x_zve64d_zve64f_zve64x_zvl128b_zvl32b_zvl64b_xtheadc_xtheadvdot:v_xthead}"
 
+#endif
 #endif

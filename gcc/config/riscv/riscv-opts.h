@@ -93,4 +93,14 @@ enum riscv_rvv_vector_bits_enum {
 #define TARGET_ZICSR    ((riscv_zi_subext & MASK_ZICSR) != 0)
 #define TARGET_ZIFENCEI ((riscv_zi_subext & MASK_ZIFENCEI) != 0)
 
+#define MASK_ZCA      (1 << 0)
+#define MASK_ZCB      (1 << 1)
+#define MASK_ZCF      (1 << 3)
+#define MASK_ZCD      (1 << 4)
+
+#define TARGET_ZCA    ((riscv_zc_subext & MASK_ZCA) != 0)
+#define TARGET_ZCB    ((riscv_zc_subext & MASK_ZCB) != 0)
+#define TARGET_ZCF    ((riscv_zc_subext & MASK_ZCF) != 0)
+#define TARGET_ZCD    ((riscv_zc_subext & MASK_ZCD) != 0)
+
 #endif /* ! GCC_RISCV_OPTS_H */

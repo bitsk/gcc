@@ -40,10 +40,12 @@
 #define _RVV_F64_TYPE double
 
 typedef unsigned int word_type __attribute__ ((mode (__word__)));
+typedef __bf16 bfloat16_t;
 typedef __fp16 float16_t;
 typedef float float32_t;
 typedef double float64_t;
 
+typedef __bf16 __bfloat16_t;
 typedef __fp16 __float16_t;
 typedef float __float32_t;
 typedef double __float64_t;
@@ -129,7 +131,7 @@ vsetvl_e##SEW##m##LMUL (word_type a)					\
 }									\
 __extension__ extern __inline word_type					\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vsetvlmax_e##SEW##m##LMUL ()						\
+vsetvlmax_e##SEW##m##LMUL (void)						\
 {									\
   return vsetvl_e##SEW##m##LMUL (-1);					\
 }
@@ -160,13 +162,13 @@ _RVV_INT_ITERATOR (_RVV_INT_VEC_MOVE)
 #define _RVVINT_TUPLE_COPY(SEW, LMUL, NF, MLEN, T, XARG)		\
 __extension__ extern __inline vint##SEW##m##LMUL##x##NF##_t		\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vundefined_i##SEW##m##LMUL##x##NF ()					\
+vundefined_i##SEW##m##LMUL##x##NF (void)					\
 {									\
   return __builtin_riscv_vundefined_i##SEW##m##LMUL##x##NF ();		\
 }									\
 __extension__ extern __inline vuint##SEW##m##LMUL##x##NF##_t		\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vundefined_u##SEW##m##LMUL##x##NF ()					\
+vundefined_u##SEW##m##LMUL##x##NF (void)					\
 {									\
   return __builtin_riscv_vundefined_u##SEW##m##LMUL##x##NF ();		\
 }									\
@@ -176,7 +178,7 @@ _RVV_INT_TUPLE_ITERATOR_ARG (_RVVINT_TUPLE_COPY, )
 #define _RVVFLOAT_TUPLE_COPY(SEW, LMUL, NF, MLEN, T, XARG)		\
 __extension__ extern __inline vfloat##SEW##m##LMUL##x##NF##_t		\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vundefined_f##SEW##m##LMUL##x##NF ()					\
+vundefined_f##SEW##m##LMUL##x##NF (void)					\
 {									\
   return __builtin_riscv_vundefined_f##SEW##m##LMUL##x##NF ();		\
 }									\
@@ -964,7 +966,7 @@ vfmv_v_f_f##SEW##m##LMUL (_RVV_F##SEW##_TYPE a, word_type vl)		\
 }									\
 __extension__ extern __inline vfloat##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vundefined_f##SEW##m##LMUL ()						\
+vundefined_f##SEW##m##LMUL (void)						\
 {									\
   return __builtin_riscv_vundefined_f##SEW##m##LMUL ();		\
 }
@@ -988,13 +990,13 @@ vmv_v_x_u##SEW##m##LMUL (u##T a, word_type vl)				\
 }									\
 __extension__ extern __inline vint##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vundefined_i##SEW##m##LMUL ()						\
+vundefined_i##SEW##m##LMUL (void)						\
 {									\
   return __builtin_riscv_vundefined_i##SEW##m##LMUL ();			\
 }									\
 __extension__ extern __inline vuint##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
-vundefined_u##SEW##m##LMUL ()						\
+vundefined_u##SEW##m##LMUL (void)						\
 {									\
   return __builtin_riscv_vundefined_u##SEW##m##LMUL ();			\
 }
@@ -2955,54 +2957,40 @@ _RVV_FLOAT_ITERATOR_ARG (_RVV_FLOAT_SLIDE, slidedown)
 __extension__ extern __inline vint##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
 v##OP##_vx_i##SEW##m##LMUL (vint##SEW##m##LMUL##_t a,			\
-			    long b, word_type vl)			\
+			    int##SEW##_t b, word_type vl)			\
 {									\
-  vsetvl_e##SEW##m##LMUL (vl);						\
-  if (__riscv_xlen == 32)						\
-    return __builtin_riscv_v##OP##int##SEW##m##LMUL##_si (a, b);	\
-  else									\
-    return __builtin_riscv_v##OP##int##SEW##m##LMUL##_di (a, b);	\
+  vsetvl_e##SEW##m##LMUL (vl);								\
+  return __builtin_riscv_v##OP##int##SEW##m##LMUL##_int##SEW (a, b);	\
 }									\
 __extension__ extern __inline vuint##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
 v##OP##_vx_u##SEW##m##LMUL (vuint##SEW##m##LMUL##_t a,			\
-			    long b, word_type vl)					\
+			    uint##SEW##_t b, word_type vl)					\
 {									\
   vsetvl_e##SEW##m##LMUL (vl);						\
-  if (__riscv_xlen == 32)						\
-    return __builtin_riscv_v##OP##u##SEW##m##LMUL##_si (a, b);		\
-  else									\
-    return __builtin_riscv_v##OP##u##SEW##m##LMUL##_di (a, b);		\
+  return __builtin_riscv_v##OP##u##SEW##m##LMUL##_uint##SEW (a, b);		\
 }									\
 __extension__ extern __inline vint##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
 v##OP##_vx_i##SEW##m##LMUL##_m (vbool##MLEN##_t mask,		\
 				   vint##SEW##m##LMUL##_t maskedoff,	\
 				   vint##SEW##m##LMUL##_t a,		\
-				   long b, word_type vl)		\
+				   int##SEW##_t b, word_type vl)		\
 {									\
-  vsetvl_e##SEW##m##LMUL (vl);						\
-  if (__riscv_xlen == 32)						\
-    return __builtin_riscv_v##OP##int##SEW##m##LMUL##_si_mask (mask,	\
-						maskedoff, a, b);	\
-  else									\
-    return __builtin_riscv_v##OP##int##SEW##m##LMUL##_di_mask (mask,	\
-						maskedoff, a, b);	\
+  vsetvl_e##SEW##m##LMUL (vl);							\
+  return __builtin_riscv_v##OP##int##SEW##m##LMUL##_int##SEW##_mask (mask,	\
+					maskedoff, a, b);	\
 }									\
 __extension__ extern __inline vuint##SEW##m##LMUL##_t			\
 __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))	\
 v##OP##_vx_u##SEW##m##LMUL##_m (vbool##MLEN##_t mask,		\
 				   vuint##SEW##m##LMUL##_t maskedoff,	\
 				   vuint##SEW##m##LMUL##_t a,		\
-				   long b, word_type vl)				\
+				   uint##SEW##_t b, word_type vl)				\
 {									\
   vsetvl_e##SEW##m##LMUL (vl);						\
-  if (__riscv_xlen == 32)						\
-    return __builtin_riscv_v##OP##u##SEW##m##LMUL##_si_mask (mask,	\
-						maskedoff, a, b);	\
-  else									\
-    return __builtin_riscv_v##OP##u##SEW##m##LMUL##_di_mask (mask,	\
-						maskedoff, a, b);	\
+  return __builtin_riscv_v##OP##u##SEW##m##LMUL##_uint##SEW##_mask (mask,	\
+					maskedoff, a, b);	\
 }
 
 _RVV_INT_ITERATOR_ARG (_RVV_INT_SLIDE1, slide1up)
@@ -10671,6 +10659,431 @@ _RVV_INT_TUPLE_NF8_ITERATOR_ARG (_RVVINT_TUPLE_LDSTM_LDST8_WRAP, b)
 _RVV_INT_TUPLE_NF8_ITERATOR_LDST16_ARG (_RVVINT_TUPLE_LDSTM_LDST8_WRAP, h)
 _RVV_INT_TUPLE_NF8_ITERATOR_LDST32_ARG (_RVVINT_TUPLE_LDSTM_LDST8_WRAP, w)
 
+#endif
+
+#if defined(__riscv_zvfbfwma) || defined(__riscv_zvfbfmin)
+__extension__ extern __inline  vbfloat16mf4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vundefined_bf16mf4 (void){return __builtin_riscv_vundefined_bf16mf4 ();}
+__extension__ extern __inline  vbfloat16mf2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vundefined_bf16mf2 (void){return __builtin_riscv_vundefined_bf16mf2 ();}
+__extension__ extern __inline  vbfloat16m1_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vundefined_bf16m1 (void){return __builtin_riscv_vundefined_bf16m1 ();}
+__extension__ extern __inline  vbfloat16m2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vundefined_bf16m2 (void){return __builtin_riscv_vundefined_bf16m2 ();}
+__extension__ extern __inline  vbfloat16m4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vundefined_bf16m4 (void){return __builtin_riscv_vundefined_bf16m4 ();}
+__extension__ extern __inline  vbfloat16m8_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vundefined_bf16m8 (void){return __builtin_riscv_vundefined_bf16m8 ();}
+
+__extension__ extern __inline vbfloat16mf4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16mf4(const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vle16_v_bf16mf4(base);
+}
+__extension__ extern __inline vbfloat16mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16mf2(const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vle16_v_bf16mf2(base);
+}
+__extension__ extern __inline vbfloat16m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m1(const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vle16_v_bf16m1(base);
+}
+__extension__ extern __inline vbfloat16m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m2(const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vle16_v_bf16m2(base);
+}
+__extension__ extern __inline vbfloat16m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m4(const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vle16_v_bf16m4(base);
+}
+__extension__ extern __inline vbfloat16m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m8(const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m8(vl);
+  return __builtin_riscv_vle16_v_bf16m8(base);
+}
+__extension__ extern __inline vbfloat16mf4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16mf4_m(vbool64_t mask, vbfloat16mf4_t maskedoff, const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vle16_v_bf16mf4_mask(mask, maskedoff, base);
+}
+__extension__ extern __inline vbfloat16mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16mf2_m(vbool32_t mask, vbfloat16mf2_t maskedoff, const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vle16_v_bf16mf2_mask(mask, maskedoff, base);
+}
+__extension__ extern __inline vbfloat16m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m1_m(vbool16_t mask, vbfloat16m1_t maskedoff, const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vle16_v_bf16m1_mask(mask, maskedoff, base);
+}
+__extension__ extern __inline vbfloat16m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m2_m(vbool8_t mask, vbfloat16m2_t maskedoff, const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vle16_v_bf16m2_mask(mask, maskedoff, base);
+}
+__extension__ extern __inline vbfloat16m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m4_m(vbool4_t mask, vbfloat16m4_t maskedoff, const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vle16_v_bf16m4_mask(mask, maskedoff, base);
+}
+__extension__ extern __inline vbfloat16m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vle16_v_bf16m8_m(vbool2_t mask, vbfloat16m8_t maskedoff, const bfloat16_t *base, size_t vl)
+{
+  vsetvl_e16m8(vl);
+  return __builtin_riscv_vle16_v_bf16m8_mask(mask, maskedoff, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16mf4(bfloat16_t *base, vbfloat16mf4_t value, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vse16_v_bf16mf4(value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16mf2(bfloat16_t *base, vbfloat16mf2_t value, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vse16_v_bf16mf2(value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m1(bfloat16_t *base, vbfloat16m1_t value, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vse16_v_bf16m1(value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m2(bfloat16_t *base, vbfloat16m2_t value, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vse16_v_bf16m2(value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m4(bfloat16_t *base, vbfloat16m4_t value, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vse16_v_bf16m4(value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m8(bfloat16_t *base, vbfloat16m8_t value, size_t vl)
+{
+  vsetvl_e16m8(vl);
+  return __builtin_riscv_vse16_v_bf16m8(value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16mf4_m(vbool64_t mask, bfloat16_t *base, vbfloat16mf4_t value, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vse16_v_bf16mf4_mask(mask, value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16mf2_m(vbool32_t mask, bfloat16_t *base, vbfloat16mf2_t value, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vse16_v_bf16mf2_mask(mask, value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m1_m(vbool16_t mask, bfloat16_t *base, vbfloat16m1_t value, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vse16_v_bf16m1_mask(mask, value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m2_m(vbool8_t mask, bfloat16_t *base, vbfloat16m2_t value, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vse16_v_bf16m2_mask(mask, value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m4_m(vbool4_t mask, bfloat16_t *base, vbfloat16m4_t value, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vse16_v_bf16m4_mask(mask, value, base);
+}
+__extension__ extern __inline void
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vse16_v_bf16m8_m(vbool2_t mask, bfloat16_t *base, vbfloat16m8_t value, size_t vl)
+{
+  vsetvl_e16m8(vl);
+  return __builtin_riscv_vse16_v_bf16m8_mask(mask, value, base);
+}
+
+__extension__ extern __inline vbfloat16mf4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_i16mf4_bf16mf4(vint16mf4_t src) { return __builtin_riscv_vreinterpret_v_i16mf4_bf16mf4(src); }
+__extension__ extern __inline vbfloat16mf2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_i16mf2_bf16mf2(vint16mf2_t src) { return __builtin_riscv_vreinterpret_v_i16mf2_bf16mf2(src); }
+__extension__ extern __inline vbfloat16m1_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_i16m1_bf16m1(vint16m1_t src) { return __builtin_riscv_vreinterpret_v_i16m1_bf16m1(src); }
+__extension__ extern __inline vbfloat16m2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_i16m2_bf16m2(vint16m2_t src) { return __builtin_riscv_vreinterpret_v_i16m2_bf16m2(src); }
+__extension__ extern __inline vbfloat16m4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_i16m4_bf16m4(vint16m4_t src) { return __builtin_riscv_vreinterpret_v_i16m4_bf16m4(src); }
+__extension__ extern __inline vbfloat16m8_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_i16m8_bf16m8(vint16m8_t src) { return __builtin_riscv_vreinterpret_v_i16m8_bf16m8(src); }
+__extension__ extern __inline vbfloat16mf4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_u16mf4_bf16mf4(vuint16mf4_t src) { return __builtin_riscv_vreinterpret_v_u16mf4_bf16mf4(src); }
+__extension__ extern __inline vbfloat16mf2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_u16mf2_bf16mf2(vuint16mf2_t src) { return __builtin_riscv_vreinterpret_v_u16mf2_bf16mf2(src); }
+__extension__ extern __inline vbfloat16m1_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_u16m1_bf16m1(vuint16m1_t src) { return __builtin_riscv_vreinterpret_v_u16m1_bf16m1(src); }
+__extension__ extern __inline vbfloat16m2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_u16m2_bf16m2(vuint16m2_t src) { return __builtin_riscv_vreinterpret_v_u16m2_bf16m2(src); }
+__extension__ extern __inline vbfloat16m4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_u16m4_bf16m4(vuint16m4_t src) { return __builtin_riscv_vreinterpret_v_u16m4_bf16m4(src); }
+__extension__ extern __inline vbfloat16m8_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_u16m8_bf16m8(vuint16m8_t src) { return __builtin_riscv_vreinterpret_v_u16m8_bf16m8(src); }
+__extension__ extern __inline vint16mf4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16mf4_i16mf4(vbfloat16mf4_t src) { return __builtin_riscv_vreinterpret_v_bf16mf4_i16mf4(src); }
+__extension__ extern __inline vint16mf2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16mf2_i16mf2(vbfloat16mf2_t src) { return __builtin_riscv_vreinterpret_v_bf16mf2_i16mf2(src); }
+__extension__ extern __inline vint16m1_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m1_i16m1(vbfloat16m1_t src) { return __builtin_riscv_vreinterpret_v_bf16m1_i16m1(src); }
+__extension__ extern __inline vint16m2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m2_i16m2(vbfloat16m2_t src) { return __builtin_riscv_vreinterpret_v_bf16m2_i16m2(src); }
+__extension__ extern __inline vint16m4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m4_i16m4(vbfloat16m4_t src) { return __builtin_riscv_vreinterpret_v_bf16m4_i16m4(src); }
+__extension__ extern __inline vint16m8_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m8_i16m8(vbfloat16m8_t src) { return __builtin_riscv_vreinterpret_v_bf16m8_i16m8(src); }
+__extension__ extern __inline vuint16mf4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16mf4_u16mf4(vbfloat16mf4_t src) { return __builtin_riscv_vreinterpret_v_bf16mf4_u16mf4(src); }
+__extension__ extern __inline vuint16mf2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16mf2_u16mf2(vbfloat16mf2_t src) { return __builtin_riscv_vreinterpret_v_bf16mf2_u16mf2(src); }
+__extension__ extern __inline vuint16m1_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m1_u16m1(vbfloat16m1_t src) { return __builtin_riscv_vreinterpret_v_bf16m1_u16m1(src); }
+__extension__ extern __inline vuint16m2_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m2_u16m2(vbfloat16m2_t src) { return __builtin_riscv_vreinterpret_v_bf16m2_u16m2(src); }
+__extension__ extern __inline vuint16m4_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m4_u16m4(vbfloat16m4_t src) { return __builtin_riscv_vreinterpret_v_bf16m4_u16m4(src); }
+__extension__ extern __inline vuint16m8_t __attribute__ ((__always_inline__, __gnu_inline__, __artificial__)) vreinterpret_v_bf16m8_u16m8(vbfloat16m8_t src) { return __builtin_riscv_vreinterpret_v_bf16m8_u16m8(src); }
+#endif
+
+#ifdef __riscv_zvfbfmin
+__extension__ extern __inline vfloat32mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwcvtbf16_f_f_v_f32mf2(vbfloat16mf4_t src, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vfwcvtbf16_f_f_v_f32mf2(src);
+}
+__extension__ extern __inline vfloat32m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwcvtbf16_f_f_v_f32m1(vbfloat16mf2_t src, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vfwcvtbf16_f_f_v_f32m1(src);
+}
+__extension__ extern __inline vfloat32m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwcvtbf16_f_f_v_f32m2(vbfloat16m1_t src, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vfwcvtbf16_f_f_v_f32m2(src);
+}
+__extension__ extern __inline vfloat32m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwcvtbf16_f_f_v_f32m4(vbfloat16m2_t src, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vfwcvtbf16_f_f_v_f32m4(src);
+}
+__extension__ extern __inline vfloat32m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwcvtbf16_f_f_v_f32m8(vbfloat16m4_t src, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vfwcvtbf16_f_f_v_f32m8(src);
+}
+__extension__ extern __inline vbfloat16mf4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfncvtbf16_f_f_w_bf16mf4(vfloat32mf2_t src, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vfncvtbf16_f_f_w_bf16mf4(src);
+}
+__extension__ extern __inline vbfloat16mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfncvtbf16_f_f_w_bf16mf2(vfloat32m1_t src, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vfncvtbf16_f_f_w_bf16mf2(src);
+}
+__extension__ extern __inline vbfloat16m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfncvtbf16_f_f_w_bf16m1(vfloat32m2_t src, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vfncvtbf16_f_f_w_bf16m1(src);
+}
+__extension__ extern __inline vbfloat16m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfncvtbf16_f_f_w_bf16m2(vfloat32m4_t src, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vfncvtbf16_f_f_w_bf16m2(src);
+}
+__extension__ extern __inline vbfloat16m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfncvtbf16_f_f_w_bf16m4(vfloat32m8_t src, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vfncvtbf16_f_f_w_bf16m4(src);
+}
+#endif
+
+#ifdef __riscv_zvfbfwma
+__extension__ extern __inline vfloat32mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32mf2(vfloat32mf2_t vd, vbfloat16mf4_t vs1, vbfloat16mf4_t vs2, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32mf2(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m1(vfloat32m1_t vd, vbfloat16mf2_t vs1, vbfloat16mf2_t vs2, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m1(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m2(vfloat32m2_t vd, vbfloat16m1_t vs1, vbfloat16m1_t vs2, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m2(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m4(vfloat32m4_t vd, vbfloat16m2_t vs1, vbfloat16m2_t vs2, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m4(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m8(vfloat32m8_t vd, vbfloat16m4_t vs1, vbfloat16m4_t vs2, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m8(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32mf2(vfloat32mf2_t vd, bfloat16_t vs1, vbfloat16mf4_t vs2, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32mf2(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m1(vfloat32m1_t vd, bfloat16_t vs1, vbfloat16mf2_t vs2, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m1(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m2(vfloat32m2_t vd, bfloat16_t vs1, vbfloat16m1_t vs2, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m2(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m4(vfloat32m4_t vd, bfloat16_t vs1, vbfloat16m2_t vs2, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m4(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m8(vfloat32m8_t vd, bfloat16_t vs1, vbfloat16m4_t vs2, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m8(vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32mf2_m(vbool64_t mask, vfloat32mf2_t vd, vbfloat16mf4_t vs1, vbfloat16mf4_t vs2, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32mf2_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m1_m(vbool32_t mask, vfloat32m1_t vd, vbfloat16mf2_t vs1, vbfloat16mf2_t vs2, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m1_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m2_m(vbool16_t mask, vfloat32m2_t vd, vbfloat16m1_t vs1, vbfloat16m1_t vs2, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m2_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m4_m(vbool8_t mask, vfloat32m4_t vd, vbfloat16m2_t vs1, vbfloat16m2_t vs2, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m4_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vv_f32m8_m(vbool4_t mask, vfloat32m8_t vd, vbfloat16m4_t vs1, vbfloat16m4_t vs2, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vfwmaccbf16_vv_f32m8_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32mf2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32mf2_m(vbool64_t mask, vfloat32mf2_t vd, bfloat16_t vs1, vbfloat16mf4_t vs2, size_t vl)
+{
+  vsetvl_e16mf4(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32mf2_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m1_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m1_m(vbool32_t mask, vfloat32m1_t vd, bfloat16_t vs1, vbfloat16mf2_t vs2, size_t vl)
+{
+  vsetvl_e16mf2(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m1_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m2_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m2_m(vbool16_t mask, vfloat32m2_t vd, bfloat16_t vs1, vbfloat16m1_t vs2, size_t vl)
+{
+  vsetvl_e16m1(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m2_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m4_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m4_m(vbool8_t mask, vfloat32m4_t vd, bfloat16_t vs1, vbfloat16m2_t vs2, size_t vl)
+{
+  vsetvl_e16m2(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m4_mask(mask, vd, vs1, vs2);
+}
+__extension__ extern __inline vfloat32m8_t
+__attribute__ ((__always_inline__, __gnu_inline__, __artificial__))
+vfwmaccbf16_vf_f32m8_m(vbool4_t mask, vfloat32m8_t vd, bfloat16_t vs1, vbfloat16m4_t vs2, size_t vl)
+{
+  vsetvl_e16m4(vl);
+  return __builtin_riscv_vfwmaccbf16_vf_f32m8_mask(mask, vd, vs1, vs2);
+}
 #endif
 
 #ifdef __riscv_xtheadvdot

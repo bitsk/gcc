@@ -25,7 +25,8 @@ along with GCC; see the file COPYING3.  If not see
 /* Link against Newlib libraries, because the ELF backend assumes Newlib.
    Handle the circular dependence between libc and libgloss. */
 #undef  LIB_SPEC
-#define LIB_SPEC "--start-group -lc %{!specs=nosys.specs:-lgloss} --end-group"
+#define LIB_SPEC "--start-group -lc %{!specs=nosys.specs:-lgloss} --end-group" \
+  "%{!nostartfiles:%{!nodefaultlibs:%{!nolibc:%{!nostdlib:%:riscv_multi_lib_check()}}}}"
 
 #define LIBGCC_SPEC "%{mccrt: -lgcc_tf -lcc-rt;!mccrt: -lgcc}"
 
@@ -34,3 +35,5 @@ along with GCC; see the file COPYING3.  If not see
 
 #undef  ENDFILE_SPEC
 #define ENDFILE_SPEC "crtend%O%s"
+
+#define RISCV_USE_CUSTOMISED_MULTI_LIB 1

@@ -1,10 +1,10 @@
 /* { dg-do compile } */
-/* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv*v*" } } */
+/* { dg-options "-march=rv64gcv -mabi=lp64d" } */
 
 #include <riscv_vector.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
+extern int printf(const char *restrict, ...);
 
 #define float64_t double
 

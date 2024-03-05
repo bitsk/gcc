@@ -1,6 +1,6 @@
 /* { dg-do assemble } */
-/* { dg-skip-if "test fclass.s insns" { *-*-* } { "*" } { "-march=*fd*xtheadc*" "-march=*fd*xtheade*" } } */
-/* { dg-options "-O2 --save-temps" } */
+/* { dg-skip-if "test fclass.s insns" { *-*-* } { "-march=*zfa*" } { "" } } */
+/* { dg-options "-march=rv64gc_xtheadc -mabi=lp64d -O2 --save-temps" } */
 
 extern void abort(void);
 extern int a;

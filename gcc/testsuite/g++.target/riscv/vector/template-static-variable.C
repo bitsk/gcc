@@ -1,5 +1,6 @@
-/* { dg-do compile } */
+/* { dg-do compile { target { ! riscv_rvv_fixed } } } */
 /* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv*v*" } } */
+
 #include<riscv_vector.h>
 
 template <uint16_t a>

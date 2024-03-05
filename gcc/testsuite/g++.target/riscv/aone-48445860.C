@@ -1,5 +1,5 @@
 /* { dg-do compile } */
-/* { dg-options "-march=rv64gc_xtheadc -mabi=lp64d -O3" } */
+/* { dg-options "-march=rv64gc_xtheadc -mabi=lp64d -O3 -mtune=c908" } */
 
 class a {
 public:

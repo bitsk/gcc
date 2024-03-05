@@ -1,7 +1,6 @@
 
 /* { dg-do assemble } */
-/* { dg-skip-if "test P-ext insns" { *-*-* } { "*" } { "-march=rv*p*" } } */
-/* { dg-options "-O2 --save-temps" } */
+/* { dg-options "-march=rv64gcp -mabi=lp64d --save-temps" } */
 
 #include <riscv-dsp.h>
 

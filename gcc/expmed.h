@@ -716,6 +716,8 @@ extern rtx expand_variable_shift (enum tree_code, machine_mode,
 				  rtx, tree, rtx, int);
 extern rtx expand_shift (enum tree_code, machine_mode, rtx, poly_int64, rtx,
 			 int);
+extern rtx maybe_expand_shift (enum tree_code, machine_mode, rtx, int, rtx,
+			       int);
 extern rtx expand_divmod (int, enum tree_code, machine_mode, rtx, rtx,
 			  rtx, int);
 #endif

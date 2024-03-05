@@ -2,6 +2,7 @@
    values with each valid memory model.  */
 /* Duplicate logic as libatomic/testsuite/libatomic.c/atomic-exchange-2.c */
 /* { dg-do run } */
+/* { dg-require-effective-target riscv_atomic }  */
 /* { dg-options "-minline-atomics" } */
 
 /* Test the execution of the __atomic_X builtin for a short.  */

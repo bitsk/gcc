@@ -37,6 +37,19 @@ if ![info exists DEFAULT_CFLAGS] then {
 # Initialize `dg'.
 dg-init
 
+if { [istarget riscv*musl*] } {
+    # Main loop.
+    if { [istarget riscv32*musl*] } {
+      dg-runtest [lsort [glob -nocomplain $srcdir/$subdir/*rv32.\[cS\]]] "" $DEFAULT_CFLAGS
+    } else {
+      dg-runtest [lsort [lsearch -all -inline -not [glob -nocomplain $srcdir/$subdir/*.\[cS\]] {*rv32.[cS]}]] "" $DEFAULT_CFLAGS
+    }
+
+    # All done.
+    dg-finish
+    return
+}
+
 # Main loop.
 dg-runtest [lsort [glob -nocomplain $srcdir/$subdir/*.\[C\]]] \
 	"" $DEFAULT_CFLAGS

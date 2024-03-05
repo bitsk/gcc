@@ -40,9 +40,11 @@ along with GCC; see the file COPYING3.  If not see
 #undef LIB_SPEC
 #ifdef LD_AS_NEEDED_OPTION
 #define LIB_SPEC GNU_USER_TARGET_LIB_SPEC \
-  " %{pthread:" LD_AS_NEEDED_OPTION " -latomic " LD_NO_AS_NEEDED_OPTION "}"
+  " %{pthread:" LD_AS_NEEDED_OPTION " -latomic " LD_NO_AS_NEEDED_OPTION "}" \
+  "%{!nostartfiles:%{!nodefaultlibs:%{!nolibc:%{!nostdlib:%:riscv_multi_lib_check()}}}}"
 #else
-#define LIB_SPEC GNU_USER_TARGET_LIB_SPEC " -latomic "
+#define LIB_SPEC GNU_USER_TARGET_LIB_SPEC " -latomic " \
+  "%{!nostartfiles:%{!nodefaultlibs:%{!nolibc:%{!nostdlib:%:riscv_multi_lib_check()}}}}"
 #endif
 
 #define ICACHE_FLUSH_FUNC "__riscv_flush_icache"
@@ -70,9 +72,13 @@ along with GCC; see the file COPYING3.  If not see
 #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
 
 #define STARTFILE_PREFIX_SPEC				\
+   "/%:riscv_get_arch_spec_path(%{march=*} %{mabi=*})"		\
+   "/usr/%:riscv_get_arch_spec_path(%{march=*} %{mabi=*})"	\
    "/lib" XLEN_SPEC "/" ABI_SPEC "/ "		\
    "/usr/lib" XLEN_SPEC "/" ABI_SPEC "/ "	\
    "/lib/ "					\
    "/usr/lib/ "
 
 #define TARGET_LINUX
+
+#define RISCV_USE_CUSTOMISED_MULTI_LIB 1

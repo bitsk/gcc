@@ -1020,6 +1020,16 @@ debug output to.  @var{verbose} is the verbose level provided by\n\
 was scheduled.",
  int, (FILE *file, int verbose, rtx_insn *insn, int more), NULL)
 
+DEFHOOK
+(adjust_unrecog_for_ready_list,
+ "This hook is used to adjust the negative impact of non-actual instructions\n\
+on pipeline optimization, such as CLOBBER, which will affect register\n\
+allocation in severe cases, resulting in reduced program performance.\n\
+@var{insn} is insn in ready list. @var{cost} is the cycle\n\
+used to increase the virtual instruction in order to delay its execution.\n\
+@var{reason} is the reason for the delayed launch of the insn.",
+ void, (rtx_insn *insn, int *cost, const char **reason), NULL)
+
 /* Initialize machine-dependent scheduling code.  */
 DEFHOOK
 (init,
@@ -2594,6 +2604,19 @@ types.",
  const char *, (const_tree type),
  hook_constcharptr_const_tree_null)
 
+/* Temporarily add conditional target specific types for the purpose of
+   emitting C++ fundamental type tinfos.  */
+DEFHOOK
+(emit_support_tinfos,
+ "If your target defines any fundamental types which depend on ISA flags,\n\
+they might need C++ tinfo symbols in libsupc++/libstdc++ regardless of\n\
+ISA flags the library is compiled with.\n\
+This hook allows creating tinfo symbols even for those cases, by temporarily\n\
+creating each corresponding fundamental type trees, calling the\n\
+@var{callback} function on it and setting the type back to @code{nullptr}.",
+ void, (emit_support_tinfos_callback callback),
+ default_emit_support_tinfos)
+
 /* Make any adjustments to libfunc names needed for this target.  */
 DEFHOOK
 (init_libfuncs,
@@ -3429,6 +3452,14 @@ insns involving vector mode @var{mode}.  At the very least, it\n\
 must have move patterns for this mode.",
  bool, (machine_mode mode),
  hook_bool_mode_false)
+
+DEFHOOK
+(vectorize_matched_mode,
+ "Find a mode that is suitable for representing a vector with @var{nunits}\n\
+elements of mode @var{innermode}, if one exists.  The returned mode can be\n\
+either an integer mode or a vector mode.",
+ opt_machine_mode, (scalar_mode innermode, poly_uint64 nunits),
+ NULL)
 
 DEFHOOK
 (compatible_vector_types_p,
@@ -6119,22 +6150,25 @@ DEFHOOK_UNDOC
 
 DEFHOOK
 (excess_precision,
- "Return a value, with the same meaning as the C99 macro\
- @code{FLT_EVAL_METHOD} that describes which excess precision should be\
- applied.  @var{type} is either @code{EXCESS_PRECISION_TYPE_IMPLICIT},\
- @code{EXCESS_PRECISION_TYPE_FAST}, or\
- @code{EXCESS_PRECISION_TYPE_STANDARD}.  For\
- @code{EXCESS_PRECISION_TYPE_IMPLICIT}, the target should return which\
- precision and range operations will be implictly evaluated in regardless\
- of the excess precision explicitly added.  For\
- @code{EXCESS_PRECISION_TYPE_STANDARD} and\
- @code{EXCESS_PRECISION_TYPE_FAST}, the target should return the\
- explicit excess precision that should be added depending on the\
- value set for @option{-fexcess-precision=@r{[}standard@r{|}fast@r{]}}.\
- Note that unpredictable explicit excess precision does not make sense,\
- so a target should never return @code{FLT_EVAL_METHOD_UNPREDICTABLE}\
- when @var{type} is @code{EXCESS_PRECISION_TYPE_STANDARD} or\
- @code{EXCESS_PRECISION_TYPE_FAST}.",
+ "Return a value, with the same meaning as the C99 macro\n\
+@code{FLT_EVAL_METHOD} that describes which excess precision should be\n\
+applied.  @var{type} is either @code{EXCESS_PRECISION_TYPE_IMPLICIT},\n\
+@code{EXCESS_PRECISION_TYPE_FAST},\n\
+@code{EXCESS_PRECISION_TYPE_STANDARD}, or\n\
+@code{EXCESS_PRECISION_TYPE_FLOAT16}.  For\n\
+@code{EXCESS_PRECISION_TYPE_IMPLICIT}, the target should return which\n\
+precision and range operations will be implictly evaluated in regardless\n\
+of the excess precision explicitly added.  For\n\
+@code{EXCESS_PRECISION_TYPE_STANDARD}, \n\
+@code{EXCESS_PRECISION_TYPE_FLOAT16}, and\n\
+@code{EXCESS_PRECISION_TYPE_FAST}, the target should return the\n\
+explicit excess precision that should be added depending on the\n\
+value set for @option{-fexcess-precision=@r{[}standard@r{|}fast@r{]}}.\n\
+Note that unpredictable explicit excess precision does not make sense,\n\
+so a target should never return @code{FLT_EVAL_METHOD_UNPREDICTABLE}\n\
+when @var{type} is @code{EXCESS_PRECISION_TYPE_STANDARD},\n\
+@code{EXCESS_PRECISION_TYPE_FLOAT16} or\n\
+@code{EXCESS_PRECISION_TYPE_FAST}.",
  enum flt_eval_method, (enum excess_precision_type type),
  default_excess_precision)
 

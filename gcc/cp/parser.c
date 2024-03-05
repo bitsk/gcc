@@ -998,6 +998,7 @@ cp_keyword_starts_decl_specifier_p (enum rid keyword)
     case RID_UNSIGNED:
     case RID_FLOAT:
     case RID_DOUBLE:
+    CASE_RID_FLOATN_NX:
     case RID_VOID:
       /* GNU extensions.  */
     case RID_ATTRIBUTE:
@@ -1814,7 +1815,7 @@ enum
      constexpr.  */
   CP_PARSER_FLAGS_ONLY_TYPE_OR_CONSTEXPR = 0x8,
   /* When parsing a decl-specifier-seq, only allow mutable, constexpr or
-     for C++2A consteval.  */
+     for C++20 consteval.  */
   CP_PARSER_FLAGS_ONLY_MUTABLE_OR_CONSTEXPR = 0x10,
   /* When parsing a decl-specifier-seq, allow missing typename.  */
   CP_PARSER_FLAGS_TYPENAME_OPTIONAL = 0x20,
@@ -3374,11 +3375,11 @@ cp_parser_diagnose_invalid_type_name (cp_parser *parser, tree id,
 	       && id_equal (id, "thread_local"))
 	inform (location, "C++11 %<thread_local%> only available with "
 		"%<-std=c++11%> or %<-std=gnu++11%>");
-      else if (cxx_dialect < cxx2a && id == ridpointers[(int)RID_CONSTINIT])
+      else if (cxx_dialect < cxx20 && id == ridpointers[(int)RID_CONSTINIT])
 	inform (location, "C++20 %<constinit%> only available with "
-		"%<-std=c++2a%> or %<-std=gnu++2a%>");
+		"%<-std=c++20%> or %<-std=gnu++20%>");
       else if (!flag_concepts && id == ridpointers[(int)RID_CONCEPT])
-	inform (location, "%<concept%> only available with %<-std=c++2a%> or "
+	inform (location, "%<concept%> only available with %<-std=c++20%> or "
 		"%<-fconcepts%>");
       else if (!flag_concepts && id == ridpointers[(int)RID_REQUIRES])
 	inform (location, "%<requires%> only available with %<-std=c++2a%> or "
@@ -7371,7 +7372,7 @@ cp_parser_postfix_expression (cp_parser *parser, bool address_p, bool cast_p,
 		|| idk == CP_ID_KIND_TEMPLATE_ID)
 	      {
 		if (identifier_p (postfix_expression)
-		    /* In C++2A, we may need to perform ADL for a template
+		    /* In C++20, we may need to perform ADL for a template
 		       name.  */
 		    || (TREE_CODE (postfix_expression) == TEMPLATE_ID_EXPR
 			&& identifier_p (TREE_OPERAND (postfix_expression, 0))))
@@ -10513,7 +10514,7 @@ cp_parser_lambda_expression (cp_parser* parser)
 
   LAMBDA_EXPR_LOCATION (lambda_expr) = token->location;
 
-  if (cxx_dialect >= cxx2a)
+  if (cxx_dialect >= cxx20)
     /* C++20 allows lambdas in unevaluated context.  */;
   else if (cp_unevaluated_operand)
     {
@@ -10521,7 +10522,7 @@ cp_parser_lambda_expression (cp_parser* parser)
 	{
 	  error_at (LAMBDA_EXPR_LOCATION (lambda_expr),
 		    "lambda-expression in unevaluated context"
-		    " only available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+		    " only available with %<-std=c++20%> or %<-std=gnu++20%>");
 	  token->error_reported = true;
 	}
       ok = false;
@@ -10531,7 +10532,7 @@ cp_parser_lambda_expression (cp_parser* parser)
       if (!token->error_reported)
 	{
 	  error_at (token->location, "lambda-expression in template-argument"
-		    " only available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+		    " only available with %<-std=c++20%> or %<-std=gnu++20%>");
 	  token->error_reported = true;
 	}
       ok = false;
@@ -10717,7 +10718,7 @@ cp_parser_lambda_introducer (cp_parser* parser, tree lambda_expr)
       if (cp_lexer_next_token_is_keyword (parser->lexer, RID_THIS))
 	{
 	  location_t loc = cp_lexer_peek_token (parser->lexer)->location;
-	  if (cxx_dialect < cxx2a
+	  if (cxx_dialect < cxx20
 	      && LAMBDA_EXPR_DEFAULT_CAPTURE_MODE (lambda_expr) == CPLD_COPY)
 	    pedwarn (loc, 0, "explicit by-copy capture of %<this%> redundant "
 		     "with by-copy capture default");
@@ -10777,9 +10778,9 @@ cp_parser_lambda_introducer (cp_parser* parser, tree lambda_expr)
       if (cp_lexer_next_token_is (parser->lexer, CPP_ELLIPSIS))
 	{
 	  ellipsis_loc = cp_lexer_peek_token (parser->lexer)->location;
-	  if (cxx_dialect < cxx2a)
+	  if (cxx_dialect < cxx20)
 	    pedwarn (ellipsis_loc, 0, "pack init-capture only available with "
-		     "%<-std=c++2a%> or %<-std=gnu++2a%>");
+		     "%<-std=c++20%> or %<-std=gnu++20%>");
 	  cp_lexer_consume_token (parser->lexer);
 	  init_pack_expansion = true;
 	}
@@ -10996,10 +10997,10 @@ cp_parser_lambda_declarator_opt (cp_parser* parser, tree lambda_expr)
 	pedwarn (parser->lexer->next_token->location, 0,
 		 "lambda templates are only available with "
 		 "%<-std=c++14%> or %<-std=gnu++14%>");
-      else if (cxx_dialect < cxx2a)
+      else if (cxx_dialect < cxx20)
 	pedwarn (parser->lexer->next_token->location, OPT_Wpedantic,
 		 "lambda templates are only available with "
-		 "%<-std=c++2a%> or %<-std=gnu++2a%>");
+		 "%<-std=c++20%> or %<-std=gnu++20%>");
 
       cp_lexer_consume_token (parser->lexer);
 
@@ -11033,7 +11034,7 @@ cp_parser_lambda_declarator_opt (cp_parser* parser, tree lambda_expr)
       bool is_consteval = false;
       /* For C++20, before parsing the parameter list check if there is
 	 a consteval specifier in the corresponding decl-specifier-seq.  */
-      if (cxx_dialect >= cxx2a)
+      if (cxx_dialect >= cxx20)
 	{
 	  for (size_t n = cp_parser_skip_balanced_tokens (parser, 1);
 	       cp_lexer_nth_token_is (parser->lexer, n, CPP_KEYWORD); n++)
@@ -12981,11 +12982,11 @@ cp_parser_init_statement (cp_parser *parser, tree *decl)
 	    /* That didn't work, try to parse it as an expression-statement.  */
 	    cp_parser_expression_statement (parser, NULL_TREE);
 
-	  if (cxx_dialect < cxx2a)
+	  if (cxx_dialect < cxx20)
 	    {
 	      pedwarn (cp_lexer_peek_token (parser->lexer)->location, 0,
 		       "range-based %<for%> loops with initializer only "
-		       "available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+		       "available with %<-std=c++20%> or %<-std=gnu++20%>");
 	      *decl = error_mark_node;
 	    }
 	}
@@ -14497,7 +14498,7 @@ cp_parser_storage_class_specifier_opt (cp_parser* parser)
      virtual
      explicit
 
-   C++2A Extension:
+   C++20 Extension:
      explicit(constant-expression)
 
    Returns an IDENTIFIER_NODE corresponding to the keyword used.
@@ -14541,10 +14542,10 @@ cp_parser_function_specifier_opt (cp_parser* parser,
 	    parser->type_definition_forbidden_message
 	      = G_("types may not be defined in explicit-specifier");
 
-	    if (cxx_dialect < cxx2a)
+	    if (cxx_dialect < cxx20)
 	      pedwarn (token->location, 0,
-		       "%<explicit(bool)%> only available with %<-std=c++2a%> "
-		       "or %<-std=gnu++2a%>");
+		       "%<explicit(bool)%> only available with %<-std=c++20%> "
+		       "or %<-std=gnu++20%>");
 
 	    /* Parse the constant-expression.  */
 	    expr = cp_parser_constant_expression (parser);
@@ -16693,12 +16694,12 @@ cp_parser_template_id (cp_parser *parser,
 	  /* This didn't go well.  */
 	  if (TREE_CODE (templ) == FUNCTION_DECL)
 	    {
-	      /* C++2A says that "function-name < a;" is now ill-formed.  */
+	      /* C++20 says that "function-name < a;" is now ill-formed.  */
 	      if (cp_parser_error_occurred (parser))
 		{
 		  error_at (token->location, "invalid template-argument-list");
 		  inform (token->location, "function name as the left hand "
-			  "operand of %<<%> is ill-formed in C++2a; wrap the "
+			  "operand of %<<%> is ill-formed in C++20; wrap the "
 			  "function name in %<()%>");
 		}
 	      else
@@ -17402,7 +17403,7 @@ cp_parser_template_argument (cp_parser* parser)
   else
     {
       /* In C++20, we can encounter a braced-init-list.  */
-      if (cxx_dialect >= cxx2a
+      if (cxx_dialect >= cxx20
 	  && cp_lexer_next_token_is (parser->lexer, CPP_OPEN_BRACE))
 	{
 	  bool expr_non_constant_p;
@@ -17955,6 +17956,14 @@ cp_parser_simple_type_specifier (cp_parser* parser,
     case RID_DOUBLE:
       type = double_type_node;
       break;
+    CASE_RID_FLOATN_NX:
+      type = FLOATN_NX_TYPE_NODE (token->keyword - RID_FLOATN_NX_FIRST);
+      if (type == NULL_TREE)
+	error ("%<_Float%d%s%> is not supported on this target",
+	       floatn_nx_types[token->keyword - RID_FLOATN_NX_FIRST].n,
+	       floatn_nx_types[token->keyword - RID_FLOATN_NX_FIRST].extended
+	       ? "x" : "");
+      break;
     case RID_VOID:
       type = void_type_node;
       break;
@@ -18132,7 +18141,7 @@ cp_parser_simple_type_specifier (cp_parser* parser,
     {
       bool qualified_p;
       bool global_p;
-      const bool typename_p = (cxx_dialect >= cxx2a
+      const bool typename_p = (cxx_dialect >= cxx20
 			       && (flags & CP_PARSER_FLAGS_TYPENAME_OPTIONAL));
 
       /* Don't gobble tokens or issue error messages if this is an
@@ -18398,7 +18407,7 @@ cp_parser_placeholder_type_specifier (cp_parser *parser, location_t loc,
   /* As per the standard, require auto or decltype(auto), except in some
      cases (template parameter lists, -fconcepts-ts enabled).  */
   cp_token *placeholder = NULL, *close_paren = NULL;
-  if (cxx_dialect >= cxx2a)
+  if (cxx_dialect >= cxx20)
     {
       if (cp_lexer_next_token_is_keyword (parser->lexer, RID_AUTO))
 	placeholder = cp_lexer_consume_token (parser->lexer);
@@ -19658,10 +19667,10 @@ cp_parser_namespace_definition (cp_parser* parser)
 							     RID_INLINE);
       if (nested_inline_p && nested_definition_count != 0)
 	{
-	  if (cxx_dialect < cxx2a)
+	  if (cxx_dialect < cxx20)
 	    pedwarn (cp_lexer_peek_token (parser->lexer)->location,
 		     OPT_Wpedantic, "nested inline namespace definitions only "
-		     "available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+		     "available with %<-std=c++20%> or %<-std=gnu++20%>");
 	  cp_lexer_consume_token (parser->lexer);
 	}
 
@@ -20214,13 +20223,13 @@ cp_parser_asm_definition (cp_parser* parser)
   /* Look for the `asm' keyword.  */
   cp_parser_require_keyword (parser, RID_ASM, RT_ASM);
 
-  /* In C++2a, unevaluated inline assembly is permitted in constexpr
+  /* In C++20, unevaluated inline assembly is permitted in constexpr
      functions.  */
   if (parser->in_function_body
       && DECL_DECLARED_CONSTEXPR_P (current_function_decl)
-      && (cxx_dialect < cxx2a))
+      && (cxx_dialect < cxx20))
     pedwarn (asm_loc, 0, "%<asm%> in %<constexpr%> function only available "
-	     "with %<-std=c++2a%> or %<-std=gnu++2a%>");
+	     "with %<-std=c++20%> or %<-std=gnu++20%>");
 
   /* Handle the asm-qualifier-list.  */
   location_t volatile_loc = UNKNOWN_LOCATION;
@@ -21626,7 +21635,7 @@ cp_parser_direct_declarator (cp_parser* parser,
 	       - it is a decl-specifier of the decl-specifier-seq of a
 		 parameter-declaration in a declarator of a function or
 		 function template declaration, ... */
-	    if (cxx_dialect >= cxx2a
+	    if (cxx_dialect >= cxx20
 		&& (flags & CP_PARSER_FLAGS_TYPENAME_OPTIONAL)
 		&& declarator->kind == cdk_id
 		&& !at_class_scope_p ()
@@ -23122,16 +23131,16 @@ cp_parser_ctor_initializer_opt_and_function_body (cp_parser *parser,
 
   if (in_function_try_block
       && DECL_DECLARED_CONSTEXPR_P (current_function_decl)
-      && cxx_dialect < cxx2a)
+      && cxx_dialect < cxx20)
     {
       if (DECL_CONSTRUCTOR_P (current_function_decl))
 	pedwarn (input_location, 0,
 		 "function-try-block body of %<constexpr%> constructor only "
-		 "available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+		 "available with %<-std=c++20%> or %<-std=gnu++20%>");
       else
 	pedwarn (input_location, 0,
 		 "function-try-block body of %<constexpr%> function only "
-		 "available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+		 "available with %<-std=c++20%> or %<-std=gnu++20%>");
     }
 
   /* Begin the function body.  */
@@ -23391,7 +23400,7 @@ cp_parser_array_designator_p (cp_parser *parser)
      initializer-clause ... [opt]
      initializer-list , initializer-clause ... [opt]
 
-   C++2A Extension:
+   C++20 Extension:
 
    designated-initializer-list:
      designated-initializer-clause
@@ -23443,8 +23452,8 @@ cp_parser_initializer_list (cp_parser* parser, bool* non_constant_p,
       bool clause_non_constant_p;
       location_t loc = cp_lexer_peek_token (parser->lexer)->location;
 
-      /* Handle the C++2A syntax, '. id ='.  */
-      if ((cxx_dialect >= cxx2a
+      /* Handle the C++20 syntax, '. id ='.  */
+      if ((cxx_dialect >= cxx20
 	   || cp_parser_allow_gnu_extensions_p (parser))
 	  && cp_lexer_next_token_is (parser->lexer, CPP_DOT)
 	  && cp_lexer_peek_nth_token (parser->lexer, 2)->type == CPP_NAME
@@ -23452,10 +23461,10 @@ cp_parser_initializer_list (cp_parser* parser, bool* non_constant_p,
 	      || (cp_lexer_peek_nth_token (parser->lexer, 3)->type
 		  == CPP_OPEN_BRACE)))
 	{
-	  if (cxx_dialect < cxx2a)
+	  if (cxx_dialect < cxx20)
 	    pedwarn (loc, OPT_Wpedantic,
 		     "C++ designated initializers only available with "
-		     "%<-std=c++2a%> or %<-std=gnu++2a%>");
+		     "%<-std=c++20%> or %<-std=gnu++20%>");
 	  /* Consume the `.'.  */
 	  cp_lexer_consume_token (parser->lexer);
 	  /* Consume the identifier.  */
@@ -23522,7 +23531,7 @@ cp_parser_initializer_list (cp_parser* parser, bool* non_constant_p,
 	  first_designator = designator;
 	  first_p = false;
 	}
-      else if (cxx_dialect >= cxx2a
+      else if (cxx_dialect >= cxx20
 	       && first_designator != error_mark_node
 	       && (!first_designator != !designator))
 	{
@@ -23530,7 +23539,7 @@ cp_parser_initializer_list (cp_parser* parser, bool* non_constant_p,
 			 "or none of them should be");
 	  first_designator = error_mark_node;
 	}
-      else if (cxx_dialect < cxx2a && !first_designator)
+      else if (cxx_dialect < cxx20 && !first_designator)
 	first_designator = designator;
 
       /* Parse the initializer.  */
@@ -23549,7 +23558,7 @@ cp_parser_initializer_list (cp_parser* parser, bool* non_constant_p,
           /* Consume the `...'.  */
           cp_lexer_consume_token (parser->lexer);
 
-	  if (designator && cxx_dialect >= cxx2a)
+	  if (designator && cxx_dialect >= cxx20)
 	    error_at (loc,
 		      "%<...%> not allowed in designated initializer list");
 
@@ -25128,7 +25137,7 @@ cp_parser_member_declaration (cp_parser* parser)
 	      width = cp_parser_constant_expression (parser, false, NULL,
 						     cxx_dialect >= cxx11);
 
-	      /* In C++2A and as extension for C++11 and above we allow
+	      /* In C++20 and as extension for C++11 and above we allow
 		 default member initializers for bit-fields.  */
 	      initializer = NULL_TREE;
 	      if (cxx_dialect >= cxx11
@@ -25138,12 +25147,12 @@ cp_parser_member_declaration (cp_parser* parser)
 		{
 		  location_t loc
 		    = cp_lexer_peek_token (parser->lexer)->location;
-		  if (cxx_dialect < cxx2a
+		  if (cxx_dialect < cxx20
 		      && identifier != NULL_TREE)
 		    pedwarn (loc, 0,
 			     "default member initializers for bit-fields "
-			     "only available with %<-std=c++2a%> or "
-			     "%<-std=gnu++2a%>");
+			     "only available with %<-std=c++20%> or "
+			     "%<-std=gnu++20%>");
 
 		  initializer = cp_parser_save_nsdmi (parser);
 		  if (identifier == NULL_TREE)
@@ -26116,10 +26125,10 @@ cp_parser_try_block (cp_parser* parser)
   cp_parser_require_keyword (parser, RID_TRY, RT_TRY);
   if (parser->in_function_body
       && DECL_DECLARED_CONSTEXPR_P (current_function_decl)
-      && cxx_dialect < cxx2a)
+      && cxx_dialect < cxx20)
     pedwarn (input_location, 0,
 	     "%<try%> in %<constexpr%> function only "
-	     "available with %<-std=c++2a%> or %<-std=gnu++2a%>");
+	     "available with %<-std=c++20%> or %<-std=gnu++20%>");
 
   try_block = begin_try_block ();
   cp_parser_compound_statement (parser, NULL, BCS_TRY_BLOCK, false);
@@ -27744,7 +27753,7 @@ cp_parser_requires_clause_opt (cp_parser *parser, bool lambda_p)
 	{
 	  error_at (cp_lexer_peek_token (parser->lexer)->location,
 		    "%<requires%> only available with "
-                    "%<-std=c++2a%> or %<-fconcepts%>");
+		    "%<-std=c++20%> or %<-fconcepts%>");
 	  /* Parse and discard the requires-clause.  */
 	  cp_lexer_consume_token (parser->lexer);
 	  cp_parser_constraint_expression (parser);
@@ -28078,7 +28087,7 @@ cp_parser_compound_requirement (cp_parser *parser)
 
       bool saved_result_type_constraint_p = parser->in_result_type_constraint_p;
       parser->in_result_type_constraint_p = true;
-      /* C++2a allows either a type-id or a type-constraint. Parsing
+      /* C++20 allows either a type-id or a type-constraint. Parsing
          a type-id will subsume the parsing for a type-constraint but
          allow for more syntactic forms (e.g., const C<T>*).  */
       type = cp_parser_trailing_type_id (parser);
@@ -29095,7 +29104,7 @@ cp_parser_template_declaration_after_parameters (cp_parser* parser,
   else if (cxx_dialect >= cxx11
 	   && cp_lexer_next_token_is_keyword (parser->lexer, RID_USING))
     decl = cp_parser_alias_declaration (parser);
-  else if (cxx_dialect >= cxx2a /* Implies flag_concept.  */
+  else if (cxx_dialect >= cxx20 /* Implies flag_concept.  */
            && cp_lexer_next_token_is_keyword (parser->lexer, RID_CONCEPT)
            && !cp_lexer_nth_token_is_keyword (parser->lexer, 2, RID_BOOL))
     /* Allow 'concept bool' to be handled as per the TS.  */

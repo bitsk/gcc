@@ -1,5 +1,5 @@
 /* { dg-do compile } */
-/* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv*v*" } } */
+/* { dg-options "-march=rv64gcv -mabi=lp64d" } */
 
 void bar(vint8m1_t *);
 void barx(int *);

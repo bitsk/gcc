@@ -21,14 +21,6 @@ if ![istarget riscv*-*-*] then {
   return
 }
 
-if { ![check_effective_target_riscv_rvv] } {
-    return
-}
-
-if { ![check_effective_target_riscv_rvv_v0p7] } {
-    return
-}
-
 # Load support procs.
 load_lib gcc-dg.exp
 
@@ -41,9 +33,22 @@ if ![info exists DEFAULT_CFLAGS] then {
 # Initialize `dg'.
 dg-init
 
+if { [istarget riscv*musl*] } {
+    # Main loop.
+    if { [istarget riscv32*musl*] } {
+      dg-runtest [lsort [glob -nocomplain $srcdir/$subdir/*rv32.\[cS\]]] "-I$srcdir/$subdir/../../ -std=gnu99 -O2" $DEFAULT_CFLAGS 
+    } else {
+      dg-runtest [lsort [lsearch -all -inline -not [glob -nocomplain $srcdir/$subdir/*.\[cS\]] {*rv32.[cS]}]] "-I$srcdir/$subdir/../../ -std=gnu99 -O2" $DEFAULT_CFLAGS 
+    }
+
+    # All done.
+    dg-finish
+    return
+}
+
 # Main loop.
 dg-runtest [lsort [glob -nocomplain $srcdir/$subdir/*.\[cS\]]] \
-	"" "$DEFAULT_CFLAGS -std=gnu99 -O2"
+	"-I$srcdir/$subdir/../../ -std=gnu99 -O2" $DEFAULT_CFLAGS 
 
 # All done.
 dg-finish

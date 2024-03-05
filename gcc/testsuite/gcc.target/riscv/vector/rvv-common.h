@@ -245,6 +245,74 @@
   MACRO (int64_t, int, i, 64m8,  8, 64, 32m4, 32, __VA_ARGS__)	\
   MACRO (int64_t, int, i, 64m8,  8, 64, 64m8, 64, __VA_ARGS__)
 
+#define RVV_INT_INDEX_TEST_ARG_RV32(MACRO, ...)			\
+  MACRO ( int8_t, int, i,  8mf8,  64,  8,  8mf8,  8, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf8,  64,  8, 16mf4, 16, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf8,  64,  8, 32mf2, 32, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf4,  32,  8,  8mf4,  8, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf4,  32,  8, 16mf2, 16, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf4,  32,  8,  32m1, 32, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf2,  16,  8,  8mf2,  8, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf2,  16,  8,  16m1, 16, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf2,  16,  8,  32m2, 32, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m1,  8,  8,  8m1,  8, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m1,  8,  8, 16m2, 16, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m1,  8,  8, 32m4, 32, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m2,  4,  8,  8m2,  8, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m2,  4,  8, 16m4, 16, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m2,  4,  8, 32m8, 32, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m4,  2,  8,  8m4,  8, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m4,  2,  8, 16m8, 16, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m8,  1,  8,  8m8,  8, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16mf4, 64, 16, 16mf4, 16, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16mf4, 64, 16, 32mf2, 32, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16mf2, 32, 16, 16mf2, 16, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16mf2, 32, 16,  32m1, 32, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m1, 16, 16, 16m1, 16, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m1, 16, 16, 32m2, 32, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m2,  8, 16,  8m1,  8, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m2,  8, 16, 16m2, 16, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m2,  8, 16, 32m4, 32, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m4,  4, 16,  8m2,  8, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m4,  4, 16, 16m4, 16, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m4,  4, 16, 32m8, 32, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m8,  2, 16,  8m4,  8, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m8,  2, 16, 16m8, 16, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32mf2, 64, 32, 32mf2, 32, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m1, 32, 32, 32m1, 32, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m2, 16, 32, 16m1, 16, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m2, 16, 32, 32m2, 32, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m4,  8, 32,  8m1,  8, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m4,  8, 32, 16m2, 16, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m4,  8, 32, 32m4, 32, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m8,  4, 32,  8m2,  8, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m8,  4, 32, 16m4, 16, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m8,  4, 32, 32m8, 32, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m2, 32, 64, 32m1, 32, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m4, 16, 64, 16m1, 16, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m4, 16, 64, 32m2, 32, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m8,  8, 64,  8m1,  8, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m8,  8, 64, 16m2, 16, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m8,  8, 64, 32m4, 32, __VA_ARGS__)	\
+
+#define RVV_INT_INDEX_64_TEST_ARG(MACRO, ...)			\
+  MACRO ( int8_t, int, i,  8mf8,  64,  8,  64m1, 64, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf4,  32,  8,  64m2, 64, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8mf2,  16,  8,  64m4, 64, __VA_ARGS__)	\
+  MACRO ( int8_t, int, i,  8m1,  8,  8, 64m8, 64, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16mf4, 64, 16,  64m1, 64, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16mf2, 32, 16,  64m2, 64, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m1, 16, 16, 64m4, 64, __VA_ARGS__)	\
+  MACRO (int16_t, int, i, 16m2,  8, 16, 64m8, 64, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32mf2, 64, 32,  64m1, 64, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m1, 32, 32, 64m2, 64, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m2, 16, 32, 64m4, 64, __VA_ARGS__)	\
+  MACRO (int32_t, int, i, 32m4,  8, 32, 64m8, 64, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m1, 64, 64, 64m1, 64, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m2, 32, 64, 64m2, 64, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m4, 16, 64, 64m4, 64, __VA_ARGS__)	\
+  MACRO (int64_t, int, i, 64m8,  8, 64, 64m8, 64, __VA_ARGS__)
+
 #define RVV_UINT_INDEX_TEST_ARG(MACRO, ...)			\
   MACRO ( uint8_t, uint, u,  8mf8,  64,  8,  8mf8,  8, __VA_ARGS__)	\
   MACRO ( uint8_t, uint, u,  8mf8,  64,  8, 16mf4, 16, __VA_ARGS__)	\
@@ -311,6 +379,74 @@
   MACRO (uint64_t, uint, u, 64m8,  8, 64, 32m4, 32, __VA_ARGS__)	\
   MACRO (uint64_t, uint, u, 64m8,  8, 64, 64m8, 64, __VA_ARGS__)
 
+#define RVV_UINT_INDEX_TEST_ARG_RV32(MACRO, ...)			\
+  MACRO ( uint8_t, uint, u,  8mf8,  64,  8,  8mf8,  8, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf8,  64,  8, 16mf4, 16, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf8,  64,  8, 32mf2, 32, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf4,  32,  8,  8mf4,  8, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf4,  32,  8, 16mf2, 16, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf4,  32,  8,  32m1, 32, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf2,  16,  8,  8mf2,  8, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf2,  16,  8,  16m1, 16, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf2,  16,  8,  32m2, 32, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m1,  8,  8,  8m1,  8, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m1,  8,  8, 16m2, 16, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m1,  8,  8, 32m4, 32, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m2,  4,  8,  8m2,  8, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m2,  4,  8, 16m4, 16, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m2,  4,  8, 32m8, 32, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m4,  2,  8,  8m4,  8, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m4,  2,  8, 16m8, 16, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m8,  1,  8,  8m8,  8, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16mf4, 64, 16, 16mf4, 16, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16mf4, 64, 16, 32mf2, 32, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16mf2, 32, 16, 16mf2, 16, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16mf2, 32, 16,  32m1, 32, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m1, 16, 16, 16m1, 16, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m1, 16, 16, 32m2, 32, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m2,  8, 16,  8m1,  8, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m2,  8, 16, 16m2, 16, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m2,  8, 16, 32m4, 32, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m4,  4, 16,  8m2,  8, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m4,  4, 16, 16m4, 16, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m4,  4, 16, 32m8, 32, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m8,  2, 16,  8m4,  8, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m8,  2, 16, 16m8, 16, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32mf2, 64, 32, 32mf2, 32, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m1, 32, 32, 32m1, 32, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m2, 16, 32, 16m1, 16, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m2, 16, 32, 32m2, 32, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m4,  8, 32,  8m1,  8, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m4,  8, 32, 16m2, 16, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m4,  8, 32, 32m4, 32, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m8,  4, 32,  8m2,  8, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m8,  4, 32, 16m4, 16, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m8,  4, 32, 32m8, 32, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m2, 32, 64, 32m1, 32, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m4, 16, 64, 16m1, 16, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m4, 16, 64, 32m2, 32, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m8,  8, 64,  8m1,  8, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m8,  8, 64, 16m2, 16, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m8,  8, 64, 32m4, 32, __VA_ARGS__)	\
+
+#define RVV_UINT_INDEX_64_TEST_ARG(MACRO, ...)			\
+  MACRO ( uint8_t, uint, u,  8mf8,  64,  8,  64m1, 64, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf4,  32,  8,  64m2, 64, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8mf2,  16,  8,  64m4, 64, __VA_ARGS__)	\
+  MACRO ( uint8_t, uint, u,  8m1,  8,  8, 64m8, 64, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16mf4, 64, 16,  64m1, 64, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16mf2, 32, 16,  64m2, 64, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m1, 16, 16, 64m4, 64, __VA_ARGS__)	\
+  MACRO (uint16_t, uint, u, 16m2,  8, 16, 64m8, 64, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32mf2, 64, 32,  64m1, 64, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m1, 32, 32, 64m2, 64, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m2, 16, 32, 64m4, 64, __VA_ARGS__)	\
+  MACRO (uint32_t, uint, u, 32m4,  8, 32, 64m8, 64, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m1, 64, 64, 64m1, 64, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m2, 32, 64, 64m2, 64, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m4, 16, 64, 64m4, 64, __VA_ARGS__)	\
+  MACRO (uint64_t, uint, u, 64m8,  8, 64, 64m8, 64, __VA_ARGS__)
+
 #define RVV_FLOAT_INDEX_TEST_ARG(MACRO, ...)			\
   MACRO (float16_t, float, f, 16mf4, 64, 16, 16mf4, 16, __VA_ARGS__)	\
   MACRO (float16_t, float, f, 16mf4, 64, 16, 32mf2, 32, __VA_ARGS__)	\
@@ -347,6 +483,46 @@
   MACRO (   double, float, f, 64m4, 16, 64, 64m4, 64, __VA_ARGS__)	\
   MACRO (   double, float, f, 64m8,  8, 64, 16m2, 16, __VA_ARGS__)	\
   MACRO (   double, float, f, 64m8,  8, 64, 32m4, 32, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m8,  8, 64, 64m8, 64, __VA_ARGS__)
+
+#define RVV_FLOAT_INDEX_TEST_ARG_RV32(MACRO, ...)			\
+  MACRO (float16_t, float, f, 16mf4, 64, 16, 16mf4, 16, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16mf4, 64, 16, 32mf2, 32, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16mf2, 32, 16, 16mf2, 16, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16mf2, 32, 16,  32m1, 32, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m1, 16, 16, 16m1, 16, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m1, 16, 16, 32m2, 32, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m2,  8, 16, 16m2, 16, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m2,  8, 16, 32m4, 32, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m4,  4, 16, 16m4, 16, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m4,  4, 16, 32m8, 32, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m8,  2, 16, 16m8, 16, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32mf2, 64, 32, 32mf2, 32, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m1, 32, 32, 32m1, 32, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m2, 16, 32, 16m1, 16, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m2, 16, 32, 32m2, 32, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m4,  8, 32, 16m2, 16, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m4,  8, 32, 32m4, 32, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m8,  4, 32, 16m4, 16, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m8,  4, 32, 32m8, 32, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m2, 32, 64, 32m1, 32, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m4, 16, 64, 16m1, 16, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m4, 16, 64, 32m2, 32, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m8,  8, 64, 16m2, 16, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m8,  8, 64, 32m4, 32, __VA_ARGS__)	\
+
+#define RVV_FLOAT_INDEX_64_TEST_ARG(MACRO, ...)			\
+  MACRO (float16_t, float, f, 16mf4, 64, 16,  64m1, 64, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16mf2, 32, 16,  64m2, 64, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m1, 16, 16, 64m4, 64, __VA_ARGS__)	\
+  MACRO (float16_t, float, f, 16m2,  8, 16, 64m8, 64, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32mf2, 64, 32,  64m1, 64, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m1, 32, 32, 64m2, 64, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m2, 16, 32, 64m4, 64, __VA_ARGS__)	\
+  MACRO (    float, float, f, 32m4,  8, 32, 64m8, 64, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m1, 64, 64, 64m1, 64, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m2, 32, 64, 64m2, 64, __VA_ARGS__)	\
+  MACRO (   double, float, f, 64m4, 16, 64, 64m4, 64, __VA_ARGS__)	\
   MACRO (   double, float, f, 64m8,  8, 64, 64m8, 64, __VA_ARGS__)
 
 #define RVV_INT_TEST(MACRO)	\
@@ -890,6 +1066,14 @@
   MACRO (64, 2, 2, 32, __VA_ARGS__)	\
   MACRO (64, 4, 2, 16, __VA_ARGS__)	\
 
+#define RVV_SEG_NF2_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 2, 16, __VA_ARGS__)	\
+  MACRO (16, 2, 2,  8, __VA_ARGS__)	\
+  MACRO (16, 4, 2,  4, __VA_ARGS__)	\
+  MACRO (32, 1, 2, 32, __VA_ARGS__)	\
+  MACRO (32, 2, 2, 16, __VA_ARGS__)	\
+  MACRO (32, 4, 2,  8, __VA_ARGS__)	\
+
 #define RVV_SEG_NF2_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF2_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\
   MACRO (8, 1, 2, 8, __VA_ARGS__)	\
@@ -904,6 +1088,12 @@
   MACRO (64, 1, 3, 64, __VA_ARGS__)	\
   MACRO (64, 2, 3, 32, __VA_ARGS__)	\
 
+#define RVV_SEG_NF3_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 3, 16, __VA_ARGS__)	\
+  MACRO (16, 2, 3,  8, __VA_ARGS__)	\
+  MACRO (32, 1, 3, 32, __VA_ARGS__)	\
+  MACRO (32, 2, 3, 16, __VA_ARGS__)	\
+
 #define RVV_SEG_NF3_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF3_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\
   MACRO (8, 1, 3, 8, __VA_ARGS__)	\
@@ -917,6 +1107,12 @@
   MACRO (64, 1, 4, 64, __VA_ARGS__)	\
   MACRO (64, 2, 4, 32, __VA_ARGS__)	\
 
+#define RVV_SEG_NF4_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 4, 16, __VA_ARGS__)	\
+  MACRO (16, 2, 4,  8, __VA_ARGS__)	\
+  MACRO (32, 1, 4, 32, __VA_ARGS__)	\
+  MACRO (32, 2, 4, 16, __VA_ARGS__)	\
+
 #define RVV_SEG_NF4_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF4_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\
   MACRO (8, 1, 4, 8, __VA_ARGS__)	\
@@ -927,6 +1123,10 @@
   MACRO (32, 1, 5, 32, __VA_ARGS__)	\
   MACRO (64, 1, 5, 64, __VA_ARGS__)	\
 
+#define RVV_SEG_NF5_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 5, 16, __VA_ARGS__)	\
+  MACRO (32, 1, 5, 32, __VA_ARGS__)	\
+
 #define RVV_SEG_NF5_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF5_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\
   MACRO (8, 1, 5, 8, __VA_ARGS__)	\
@@ -935,6 +1135,10 @@
   MACRO (16, 1, 6, 16, __VA_ARGS__)	\
   MACRO (32, 1, 6, 32, __VA_ARGS__)	\
   MACRO (64, 1, 6, 64, __VA_ARGS__)	\
+
+#define RVV_SEG_NF6_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 6, 16, __VA_ARGS__)	\
+  MACRO (32, 1, 6, 32, __VA_ARGS__)	\
 
 #define RVV_SEG_NF6_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF6_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\
@@ -945,6 +1149,10 @@
   MACRO (32, 1, 7, 32, __VA_ARGS__)	\
   MACRO (64, 1, 7, 64, __VA_ARGS__)	\
 
+#define RVV_SEG_NF7_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 7, 16, __VA_ARGS__)	\
+  MACRO (32, 1, 7, 32, __VA_ARGS__)	\
+
 #define RVV_SEG_NF7_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF7_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\
   MACRO (8, 1, 7, 8, __VA_ARGS__)	\
@@ -953,6 +1161,164 @@
   MACRO (16, 1, 8, 16, __VA_ARGS__)	\
   MACRO (32, 1, 8, 32, __VA_ARGS__)	\
   MACRO (64, 1, 8, 64, __VA_ARGS__)	\
+
+#define RVV_SEG_NF8_NO_SEW8_TEST_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 8, 16, __VA_ARGS__)	\
+  MACRO (32, 1, 8, 32, __VA_ARGS__)	\
+
+#define _RVV_INT_TUPLE_NF2_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 2, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 2, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 2, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (8, 2, 2, 4, int8_t, 8, 2, __VA_ARGS__) \
+  MACRO (8, 2, 2, 4, int8_t, 16, 4, __VA_ARGS__) \
+  MACRO (8, 2, 2, 4, int8_t, 32, 8, __VA_ARGS__) \
+  MACRO (8, 4, 2, 2, int8_t, 8, 4, __VA_ARGS__) \
+  MACRO (8, 4, 2, 2, int8_t, 16, 8, __VA_ARGS__) \
+  MACRO (16, 1, 2, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 2, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, int16_t, 8, 1, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, int16_t, 16, 2, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, int16_t, 32, 4, __VA_ARGS__) \
+  MACRO (16, 4, 2, 4, int16_t, 8, 2, __VA_ARGS__) \
+  MACRO (16, 4, 2, 4, int16_t, 16, 4, __VA_ARGS__) \
+  MACRO (16, 4, 2, 4, int16_t, 32, 8, __VA_ARGS__) \
+  MACRO (32, 1, 2, 32, int32_t, 32, 1, __VA_ARGS__) \
+  MACRO (32, 2, 2, 16, int32_t, 16, 1, __VA_ARGS__) \
+  MACRO (32, 2, 2, 16, int32_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 4, 2, 8, int32_t, 8, 1, __VA_ARGS__) \
+  MACRO (32, 4, 2, 8, int32_t, 16, 2, __VA_ARGS__) \
+  MACRO (32, 4, 2, 8, int32_t, 32, 4, __VA_ARGS__) \
+  MACRO (64, 2, 2, 32, int64_t, 32, 1, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, int64_t, 16, 1, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, int64_t, 32, 2, __VA_ARGS__) \
+
+#define _RVV_INT_TUPLE_NF3_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 3, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 3, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 3, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (8, 2, 3, 4, int8_t, 8, 2, __VA_ARGS__) \
+  MACRO (8, 2, 3, 4, int8_t, 16, 4, __VA_ARGS__) \
+  MACRO (8, 2, 3, 4, int8_t, 32, 8, __VA_ARGS__) \
+  MACRO (16, 1, 3, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 3, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, int16_t, 8, 1, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, int16_t, 16, 2, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, int16_t, 32, 4, __VA_ARGS__) \
+  MACRO (32, 1, 3, 32, int32_t, 32, 1, __VA_ARGS__) \
+  MACRO (32, 2, 3, 16, int32_t, 16, 1, __VA_ARGS__) \
+  MACRO (32, 2, 3, 16, int32_t, 32, 2, __VA_ARGS__) \
+  MACRO (64, 2, 3, 32, int64_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_INT_TUPLE_NF4_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 4, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 4, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 4, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (8, 2, 4, 4, int8_t, 8, 2, __VA_ARGS__) \
+  MACRO (8, 2, 4, 4, int8_t, 16, 4, __VA_ARGS__) \
+  MACRO (8, 2, 4, 4, int8_t, 32, 8, __VA_ARGS__) \
+  MACRO (16, 1, 4, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 4, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, int16_t, 8, 1, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, int16_t, 16, 2, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, int16_t, 32, 4, __VA_ARGS__) \
+  MACRO (32, 1, 4, 32, int32_t, 32, 1, __VA_ARGS__) \
+  MACRO (32, 2, 4, 16, int32_t, 16, 1, __VA_ARGS__) \
+  MACRO (32, 2, 4, 16, int32_t, 32, 2, __VA_ARGS__) \
+  MACRO (64, 2, 4, 32, int64_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_INT_TUPLE_NF5_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 5, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 5, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 5, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (16, 1, 5, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 5, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 5, 32, int32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_INT_TUPLE_NF6_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 6, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 6, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 6, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (16, 1, 6, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 6, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 6, 32, int32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_INT_TUPLE_NF7_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 7, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 7, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 7, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (16, 1, 7, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 7, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 7, 32, int32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_INT_TUPLE_NF8_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (8, 1, 8, 8, int8_t, 8, 1, __VA_ARGS__) \
+  MACRO (8, 1, 8, 8, int8_t, 16, 2, __VA_ARGS__) \
+  MACRO (8, 1, 8, 8, int8_t, 32, 4, __VA_ARGS__) \
+  MACRO (16, 1, 8, 16, int16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 8, 16, int16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 8, 32, int32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF2_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 2, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 2, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, __float16_t, 8, 1, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, __float16_t, 16, 2, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, __float16_t, 32, 4, __VA_ARGS__) \
+  MACRO (16, 4, 2, 4, __float16_t, 8, 2, __VA_ARGS__) \
+  MACRO (16, 4, 2, 4, __float16_t, 16, 4, __VA_ARGS__) \
+  MACRO (16, 4, 2, 4, __float16_t, 32, 8, __VA_ARGS__) \
+  MACRO (32, 1, 2, 32, __float32_t, 32, 1, __VA_ARGS__) \
+  MACRO (32, 2, 2, 16, __float32_t, 16, 1, __VA_ARGS__) \
+  MACRO (32, 2, 2, 16, __float32_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 4, 2, 8, __float32_t, 8, 1, __VA_ARGS__) \
+  MACRO (32, 4, 2, 8, __float32_t, 16, 2, __VA_ARGS__) \
+  MACRO (32, 4, 2, 8, __float32_t, 32, 4, __VA_ARGS__) \
+  MACRO (64, 2, 2, 32, __float64_t, 32, 1, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, __float64_t, 16, 1, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, __float64_t, 32, 2, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF3_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 3, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 3, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, __float16_t, 8, 1, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, __float16_t, 16, 2, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, __float16_t, 32, 4, __VA_ARGS__) \
+  MACRO (32, 1, 3, 32, __float32_t, 32, 1, __VA_ARGS__) \
+  MACRO (32, 2, 3, 16, __float32_t, 16, 1, __VA_ARGS__) \
+  MACRO (32, 2, 3, 16, __float32_t, 32, 2, __VA_ARGS__) \
+  MACRO (64, 2, 3, 32, __float64_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF4_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 4, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 4, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, __float16_t, 8, 1, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, __float16_t, 16, 2, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, __float16_t, 32, 4, __VA_ARGS__) \
+  MACRO (32, 1, 4, 32, __float32_t, 32, 1, __VA_ARGS__) \
+  MACRO (32, 2, 4, 16, __float32_t, 16, 1, __VA_ARGS__) \
+  MACRO (32, 2, 4, 16, __float32_t, 32, 2, __VA_ARGS__) \
+  MACRO (64, 2, 4, 32, __float64_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF5_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 5, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 5, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 5, 32, __float32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF6_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 6, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 6, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 6, 32, __float32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF7_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 7, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 7, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 7, 32, __float32_t, 32, 1, __VA_ARGS__) \
+
+#define _RVV_FLOAT_TUPLE_NF8_INDEX_ITERATOR_ARG_RV32(MACRO, ...) \
+  MACRO (16, 1, 8, 16, __float16_t, 16, 1, __VA_ARGS__) \
+  MACRO (16, 1, 8, 16, __float16_t, 32, 2, __VA_ARGS__) \
+  MACRO (32, 1, 8, 32, __float32_t, 32, 1, __VA_ARGS__) \
 
 #define RVV_SEG_NF8_TEST_ARG(MACRO, ...)		\
   RVV_SEG_NF8_NO_SEW8_TEST_ARG(MACRO, __VA_ARGS__)	\

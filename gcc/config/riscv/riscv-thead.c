@@ -514,23 +514,39 @@ riscv_classify_address_vector (struct riscv_address_info *info, rtx x,
     }
 }
 
+static int ipush_regs[] ={
+  RETURN_ADDR_REGNUM,
+  T0_REGNUM, T1_REGNUM, T2_REGNUM,
+  A0_REGNUM, A1_REGNUM, A2_REGNUM, A3_REGNUM,
+  A4_REGNUM, A5_REGNUM, A6_REGNUM, A7_REGNUM,
+  T3_REGNUM, T4_REGNUM, T5_REGNUM, T6_REGNUM,
+};
+
 bool
 riscv_save_reg_ipush_p (int regno)
 {
-  int regs[] = {
-    RETURN_ADDR_REGNUM,
-    T0_REGNUM, T1_REGNUM, T2_REGNUM,
-    A0_REGNUM, A1_REGNUM, A2_REGNUM, A3_REGNUM,
-    A4_REGNUM, A5_REGNUM, A6_REGNUM, A7_REGNUM,
-    T3_REGNUM, T4_REGNUM, T5_REGNUM, T6_REGNUM,
-  };
-
-  for (unsigned int i = 0; i < ARRAY_SIZE (regs); i++)
+  for (unsigned int i = 0; i < ARRAY_SIZE (ipush_regs); i++)
     {
-      if (GP_REG_P (regno) && regno == regs[i] + GP_REG_FIRST)
+      if (GP_REG_P (regno) && regno == ipush_regs[i] + GP_REG_FIRST)
 	return true;
     }
   return false;
+}
+
+/* Return true if the instruction IPUSH/IPOP can be inserted.  */
+
+bool
+riscv_insert_ipush_p (void)
+{
+  unsigned int i = 0;
+  for (int regno = GP_REG_FIRST; regno <= GP_REG_LAST; regno++)
+    if (BITSET_P (cfun->machine->frame.imask, regno - GP_REG_FIRST)
+	&& regno != RISCV_PROLOGUE_TEMP_REGNUM)
+      i++;
+
+  /* TODO: 3/4 may not be reasonable, it is a balance between
+     code size and performance.  */
+  return i >= (ARRAY_SIZE (ipush_regs) * 3/4);
 }
 
 rtx
@@ -539,7 +555,7 @@ riscv_adjust_ipush_cfi_prologue ()
   rtx dwarf = NULL_RTX;
   rtx adjust_sp_rtx, reg, mem, insn;
   int saved_size = cfun->machine->frame.save_ipush_adjustment;
-  int offset = saved_size - UNITS_PER_WORD * 2;
+  int offset = saved_size;
 
   for (int regno = GP_REG_FIRST; regno <= GP_REG_LAST; regno++)
     if (BITSET_P (cfun->machine->frame.imask, regno - GP_REG_FIRST))
@@ -560,6 +576,115 @@ riscv_adjust_ipush_cfi_prologue ()
   dwarf = alloc_reg_note (REG_CFA_ADJUST_CFA, adjust_sp_rtx, dwarf);
 
   return dwarf;
+}
+
+static void
+riscv_save_restore_csr (HOST_WIDE_INT offset, int csr_regnum, bool epilogue)
+{
+  if (!epilogue)
+    {
+      emit_insn (gen_riscv_csr_read (RISCV_PROLOGUE_TEMP (Pmode), GEN_INT (csr_regnum)));
+      riscv_save_restore_reg (Pmode, RISCV_PROLOGUE_TEMP_REGNUM, offset, riscv_save_reg);
+    }
+  else
+    {
+      riscv_save_restore_reg (Pmode, RISCV_PROLOGUE_TEMP_REGNUM, offset, riscv_restore_reg);
+      emit_insn (gen_riscv_csr_write (GEN_INT (csr_regnum), RISCV_PROLOGUE_TEMP (Pmode)));
+    }
+}
+
+/* Returns true if the function needs to save or restore the csr state in order to
+interrupt and adjust OFFSET.  */
+
+static bool
+riscv_handle_csr_for_interrupt (HOST_WIDE_INT offset, riscv_save_restore_fn fn,
+				bool epilogue, int regno)
+{
+  HOST_WIDE_INT csr_offset = 0;
+  bool save_fcsr_p = false;
+  bool save_vxsat_p = false;
+
+  /* In an interrupt function, save and restore some necessary CSRs in the stack
+     to avoid changes in CSRs.  */
+  if (regno != RISCV_PROLOGUE_TEMP_REGNUM
+      || !cfun->machine->interrupt_handler_p)
+    return false;
+
+  if ((TARGET_HARD_FLOAT  && cfun->machine->frame.fmask))
+    save_fcsr_p = true;
+
+  if (TARGET_XTHEAD_DSP)
+    save_vxsat_p = true;
+
+  if (!save_fcsr_p && !save_vxsat_p && !TARGET_XTHEAD_INTERRUPT_NESTING_CSR)
+    return false;
+
+  if (!epilogue)
+    {
+      riscv_save_restore_reg (word_mode, regno, offset, fn);
+
+      if (TARGET_XTHEAD_INTERRUPT_NESTING_CSR)
+	{
+	  /* Save mepc.  */
+	  riscv_save_restore_csr (offset - csr_offset - 1 * UNITS_PER_WORD, MEPC_REGNUM, epilogue);
+
+	  /* Save cause.  */
+	  riscv_save_restore_csr (offset - csr_offset - 2 * UNITS_PER_WORD, MCAUSE_REGNUM, epilogue);
+
+	  /* Save mstatus.  */
+	  riscv_save_restore_csr (offset - csr_offset - 3 * UNITS_PER_WORD, MSTATUS_REGNUM, epilogue);
+	  csr_offset +=  (3 * UNITS_PER_WORD);
+	}
+
+      if (save_fcsr_p)
+	{
+	  /* Save fcsr.  */
+	  csr_offset +=  (1 * UNITS_PER_WORD);
+	  emit_insn (gen_riscv_frcsr (RISCV_PROLOGUE_TEMP (Pmode)));
+	  riscv_save_restore_reg (Pmode, RISCV_PROLOGUE_TEMP_REGNUM, offset - csr_offset, riscv_save_reg);
+	}
+
+      if (save_vxsat_p)
+	{
+	  /* Save vxsat.  */
+	  csr_offset +=  (1 * UNITS_PER_WORD);
+	  riscv_save_restore_csr (offset - csr_offset, VXSAT_REGNUM, epilogue);
+	}
+    }
+  else
+    {
+      if (TARGET_XTHEAD_INTERRUPT_NESTING_CSR)
+	{
+	  /* Restore mstatus.  */
+	  riscv_save_restore_csr (offset - csr_offset - 3 * UNITS_PER_WORD, MSTATUS_REGNUM, epilogue);
+
+	  /* Restore mcause.  */
+	  riscv_save_restore_csr (offset - csr_offset - 2 * UNITS_PER_WORD, MCAUSE_REGNUM, epilogue);
+
+	  /* Restore mepc.  */
+	  riscv_save_restore_csr (offset - csr_offset - 1 * UNITS_PER_WORD, MEPC_REGNUM, epilogue);
+	  csr_offset +=  (3 * UNITS_PER_WORD);
+	}
+
+      if (save_fcsr_p)
+	{
+	  /* Restore fcsr.  */
+	  csr_offset +=  (1 * UNITS_PER_WORD);
+	  riscv_save_restore_reg (SImode, RISCV_PROLOGUE_TEMP_REGNUM, offset - csr_offset, riscv_restore_reg);
+	  emit_insn (gen_riscv_fscsr (RISCV_PROLOGUE_TEMP (SImode)));
+	}
+
+      if (save_vxsat_p)
+	{
+	  /* Restore vxsat.  */
+	  csr_offset +=  (1 * UNITS_PER_WORD);
+	  riscv_save_restore_csr (offset - csr_offset, VXSAT_REGNUM, epilogue);
+	}
+
+	riscv_save_restore_reg (word_mode, regno, offset, fn);
+    }
+
+  return true;
 }
 
 /* Implement DSP extension.  */
@@ -619,6 +744,110 @@ riscv_dsp_preferred_mode (scalar_mode mode)
   return VOIDmode;
 }
 
+/* Implement TARGET_INIT_LIBFUNCS.
+   Record that we have no arithmetic or comparison libfuncs for
+   machine mode MODE.  */
+
+static void
+riscv_init_libfuncs (void)
+{
+  /* Half-precision float operations.  The compiler handles all operations
+     with NULL libfuncs by converting to SFmode.  */
+
+  /* __FP16.  */
+  /* Arithmetic.  */
+  set_optab_libfunc (add_optab, HFmode, NULL);
+  set_optab_libfunc (sdiv_optab, HFmode, NULL);
+  set_optab_libfunc (smul_optab, HFmode, NULL);
+  set_optab_libfunc (neg_optab, HFmode, NULL);
+  set_optab_libfunc (sub_optab, HFmode, NULL);
+
+  /* Comparisons.  */
+  /* These have been implemented in the soft floating point library.  */
+  /*
+  set_optab_libfunc (eq_optab, HFmode, NULL);
+  set_optab_libfunc (ne_optab, HFmode, NULL);
+  set_optab_libfunc (lt_optab, HFmode, NULL);
+  set_optab_libfunc (le_optab, HFmode, NULL);
+  set_optab_libfunc (ge_optab, HFmode, NULL);
+  set_optab_libfunc (gt_optab, HFmode, NULL);
+  set_optab_libfunc (unord_optab, HFmode, NULL);
+  */
+
+  /* __BF16.  */
+  /* Arithmetic.  */
+  set_optab_libfunc (add_optab, BFmode, NULL);
+  set_optab_libfunc (sdiv_optab, BFmode, NULL);
+  set_optab_libfunc (smul_optab, BFmode, NULL);
+  set_optab_libfunc (neg_optab, BFmode, NULL);
+  set_optab_libfunc (sub_optab, BFmode, NULL);
+
+  /* Comparisons.  */
+  set_optab_libfunc (eq_optab, BFmode, NULL);
+  set_optab_libfunc (ne_optab, BFmode, NULL);
+  set_optab_libfunc (lt_optab, BFmode, NULL);
+  set_optab_libfunc (le_optab, BFmode, NULL);
+  set_optab_libfunc (ge_optab, BFmode, NULL);
+  set_optab_libfunc (gt_optab, BFmode, NULL);
+  set_optab_libfunc (unord_optab, BFmode, NULL);
+}
+
+/* Use libcall to convert SRC to DEST.  */
+
+void
+emit_libcall_insn_for_convert (rtx dest, rtx src, bool unsigned_p)
+{
+  machine_mode dest_mode = GET_MODE (dest);
+  machine_mode src_mode = GET_MODE (src);
+  unsigned dest_size = GET_MODE_SIZE (dest_mode).to_constant ();
+  unsigned src_size = GET_MODE_SIZE (src_mode).to_constant ();
+
+  convert_optab cvt = unknown_optab;
+  rtx libfunc = NULL_RTX;
+
+  unsigned mode_type = ((SCALAR_FLOAT_MODE_P(dest_mode) ? 1 : 0) << 1)
+			+ (SCALAR_FLOAT_MODE_P(src_mode) ? 1 : 0);
+
+  switch (mode_type)
+    {
+      case 3:
+	{
+	  if (dest_size > src_size)
+	    cvt = sext_optab;
+	  else if (dest_size < src_size)
+	    cvt = trunc_optab;
+	  break;
+	}
+      case 2:
+	{
+	  cvt = unsigned_p ? ufloat_optab : sfloat_optab;
+	  break;
+	}
+      case 1:
+	{
+	  cvt = unsigned_p ? ufix_optab : sfix_optab;
+	  break;
+	}
+      case 0:
+      default:
+	break;
+    }
+
+  /* TODO: Do not handle equality conversions or GP to GP conversions,
+     such as HF to BF or SI to DI.  */
+  gcc_assert (cvt != unknown_optab);
+
+  libfunc = convert_optab_libfunc (cvt, dest_mode, src_mode);
+  gcc_assert (libfunc != NULL_RTX);
+
+  rtx dest2 = emit_library_call_value (libfunc, dest, LCT_CONST, dest_mode,
+				       src, src_mode);
+  gcc_assert (dest2 != NULL_RTX);
+
+  if (!rtx_equal_p (dest, dest2))
+    emit_move_insn (dest, dest2);
+}
+
 /* Implement TARGET_IV_GEN_LOAD_INDEX.
    Don't generate index for induction variables for the loop when
    4k-optimize is enable and loop size is larger than 4k.  */
@@ -637,6 +866,51 @@ riscv_iv_gen_load_index (HOST_WIDE_INT loop_niter,
   return true;
 }
 
+/* Nonzero if MODE is a matrix mode. */
+
+bool
+riscv_matrix_mode(machine_mode mode)
+{
+  switch (mode)
+  {
+  case E_M64QImode:
+  case E_M32HImode:
+  case E_M16SImode:
+  case E_M8DImode:
+  case E_M4TImode:
+  case E_M32HFmode:
+  case E_M16SFmode:
+  case E_M8DFmode:
+  case E_M4TFmode:
+  case E_M2x32HFmode:
+  case E_M2x16SFmode:
+  case E_M2x8DFmode:
+  case E_M2x4TFmode:
+    return true;
+  default:
+    break;
+  }
+
+  return false;
+}
+
+/* Nonzero if MODE is a matrix mode with 2 nregs. */
+
+bool
+riscv_matrix_x2_mode(machine_mode mode)
+{
+  switch (mode)
+  {
+  case E_M2x32HFmode:
+  case E_M2x16SFmode:
+  case E_M2x8DFmode:
+  case E_M2x4TFmode:
+    return true;
+  default:
+    break;
+  }
+  return false;
+}
 
 /* Implement TARGET_REGISTER_REJECT_INIT_P.  */
 
@@ -645,6 +919,10 @@ riscv_register_reject_init_p (rtx reg)
 {
   if (TARGET_VECTOR && VECTOR_MODE_P (GET_MODE (reg)))
     return true;
+
+  if (TARGET_MATRIX && riscv_matrix_mode (GET_MODE (reg)))
+    return true;
+
   return false;
 }
 
@@ -1117,6 +1395,45 @@ riscv_optimize_quiet_comparison ()
   df_finish_pass (false);
 }
 
+opt_machine_mode
+riscv_vectorize_matched_mode (scalar_mode innermode, poly_uint64 nunits)
+{
+  if (TARGET_VECTOR_FIXED)
+    return opt_machine_mode ();
+
+  machine_mode mode;
+  /* First, look for a supported vector type.  */
+  if (SCALAR_FLOAT_MODE_P (innermode))
+    mode = MIN_MODE_VECTOR_FLOAT;
+  else if (SCALAR_FRACT_MODE_P (innermode))
+    mode = MIN_MODE_VECTOR_FRACT;
+  else if (SCALAR_UFRACT_MODE_P (innermode))
+    mode = MIN_MODE_VECTOR_UFRACT;
+  else if (SCALAR_ACCUM_MODE_P (innermode))
+    mode = MIN_MODE_VECTOR_ACCUM;
+  else if (SCALAR_UACCUM_MODE_P (innermode))
+    mode = MIN_MODE_VECTOR_UACCUM;
+  else
+    mode = MIN_MODE_VECTOR_INT;
+
+  /* Do not check vector_mode_supported_p here.  We'll do that
+     later in vector_type_mode.  */
+  FOR_EACH_MODE_FROM (mode, mode)
+    if (known_eq (GET_MODE_NUNITS (mode), nunits)
+	&& GET_MODE_INNER (mode) == innermode)
+      return mode;
+
+  /* For integers, try mapping it to a same-sized scalar mode.  */
+  if (GET_MODE_CLASS (innermode) == MODE_INT)
+    {
+      poly_uint64 nbits = nunits * GET_MODE_BITSIZE (innermode);
+      if (int_mode_for_size (nbits, 0).exists (&mode)
+	  && have_regs_of_mode[mode])
+	return mode;
+    }
+
+  return opt_machine_mode ();
+}
 
 #include "riscv-thead-dsext.c"
 #include "riscv-thead-dvsetvl.c"
@@ -1141,3 +1458,8 @@ riscv_optimize_quiet_comparison ()
 #undef TARGET_FWPROP_LEGITIMIZE_SET
 #define TARGET_FWPROP_LEGITIMIZE_SET riscv_fwprop_legitimize_set
 
+#undef TARGET_INIT_LIBFUNCS
+#define TARGET_INIT_LIBFUNCS riscv_init_libfuncs
+
+#undef TARGET_VECTORIZE_MATCHED_MODE
+#define TARGET_VECTORIZE_MATCHED_MODE riscv_vectorize_matched_mode

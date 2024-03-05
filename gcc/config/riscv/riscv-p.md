@@ -254,61 +254,6 @@
   }
 )
 
-(define_expand "avgdi3_floor"
-  [(match_operand:DI 0 "register_operand")
-   (match_operand:DI 1 "register_operand")
-   (match_operand:DI 2 "register_operand")]
-  "TARGET_XTHEAD_ZPSFOPERAND"
-  {
-    emit_insn (gen_riscv_radd64 (operands[0], operands[1], operands[2]));
-    DONE;
-  }
-)
-
-(define_expand "uavgdi3_floor"
-  [(match_operand:DI 0 "register_operand")
-   (match_operand:DI 1 "register_operand")
-   (match_operand:DI 2 "register_operand")]
-  "TARGET_XTHEAD_ZPSFOPERAND"
-  {
-    emit_insn (gen_riscv_uradd64 (operands[0], operands[1], operands[2]));
-    DONE;
-  }
-)
-
-(define_expand "avgsi3_floor"
-  [(match_operand:SI 0 "register_operand")
-   (match_operand:SI 1 "register_operand")
-   (match_operand:SI 2 "register_operand")]
-  "TARGET_XTHEAD_ZPN"
-  {
-    emit_insn (gen_riscv_raddw_si (operands[0], operands[1], operands[2]));
-    DONE;
-  }
-)
-
-(define_expand "uavgsi3_floor"
-  [(match_operand:SI 0 "register_operand")
-   (match_operand:SI 1 "register_operand")
-   (match_operand:SI 2 "register_operand")]
-  "TARGET_XTHEAD_ZPN"
-  {
-    emit_insn (gen_riscv_uraddw_si (operands[0], operands[1], operands[2]));
-    DONE;
-  }
-)
-
-(define_expand "avg<mode>3_ceil"
-  [(match_operand:X 0 "register_operand")
-   (match_operand:X 1 "register_operand")
-   (match_operand:X 2 "register_operand")]
-  "TARGET_XTHEAD_ZPN"
-  {
-    emit_insn (gen_riscv_ave_<mode> (operands[0], operands[1], operands[2]));
-    DONE;
-  }
-)
-
 (define_expand "clrsb<mode>2"
   [(set (match_operand:DSP_QIHISI 0 "register_operand" "=r")
 	(clrsb:DSP_QIHISI
@@ -317,23 +262,16 @@
   ""
 )
 
-;; (define_expand "clz<mode>2"
-;;   [(set (match_operand:DSP_QIHISI 0 "register_operand" "=r")
-;; 	(clz:DSP_QIHISI (match_operand:DSP_QIHISI 1 "register_operand" "r")))]
-;;   "TARGET_XTHEAD_ZPN"
-;;   ""
-;; )
+(define_expand "clzv2si2"
+  [(set (match_operand:V2SI 0 "register_operand" "=r")
+	(clz:V2SI (match_operand:V2SI 1 "register_operand" "r")))]
+  "TARGET_XTHEAD_ZPN && TARGET_64BIT"
+  ""
+)
 
 (define_insn "bswaphi2"
   [(set (match_operand:HI 0 "register_operand" "=r")
 	(bswap:HI (match_operand:HI 1 "register_operand" "r")))]
-  "TARGET_XTHEAD_ZPN"
-  "swap8\t%0,%1"
-)
-
-(define_insn "bswap<mode>2"
-  [(set (match_operand:DSP_HI 0 "register_operand" "=r")
-	(bswap:DSP_HI (match_operand:DSP_HI 1 "register_operand" "r")))]
   "TARGET_XTHEAD_ZPN"
   "swap8\t%0,%1"
 )
@@ -674,11 +612,11 @@
 		(dsp_integer_add_sub_code:<DSP_EMODE_WIDEN>
 		  (sign_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 2)
+		      (match_dup 1)
 		      (parallel [(const_int 1)])))
 		  (sign_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 1)
+		      (match_dup 2)
 		      (parallel [(const_int 0)]))))
 	      (const_int 1))))
 	  (const_int 1)))]
@@ -755,11 +693,11 @@
 		(dsp_integer_add_sub_code:<DSP_EMODE_WIDEN>
 		  (zero_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 2)
+		      (match_dup 1)
 		      (parallel [(const_int 1)])))
 		  (zero_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 1)
+		      (match_dup 2)
 		      (parallel [(const_int 0)]))))
 	      (const_int 1))))
 	  (const_int 1)))]
@@ -836,11 +774,11 @@
 		(dsp_integer_add_sub_code:<DSP_EMODE_WIDEN>
 		  (sign_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 2)
+		      (match_dup 1)
 		      (parallel [(const_int 1)])))
 		  (sign_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 1)
+		      (match_dup 2)
 		      (parallel [(const_int 1)]))))
 		(const_int 1))))
 	  (const_int 1)))]
@@ -917,11 +855,11 @@
 		(dsp_integer_add_sub_code:<DSP_EMODE_WIDEN>
 		  (zero_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 2)
+		      (match_dup 1)
 		      (parallel [(const_int 1)])))
 		  (zero_extend:<DSP_EMODE_WIDEN>
 		    (vec_select:<DSP_EMODE>
-		      (match_dup 1)
+		      (match_dup 2)
 		      (parallel [(const_int 1)]))))
 		(const_int 1))))
 	  (const_int 1)))]
@@ -1829,8 +1767,8 @@
 	(vec_select:V4HI
 	 (vec_concat:V8HI (match_operand:V4HI 1 "register_operand" "r")
 			  (match_operand:V4HI 2 "register_operand" "r"))
-	 (parallel [(const_int 0) (const_int 4)
-		    (const_int 2) (const_int 6)])))]
+	 (parallel [(const_int 4) (const_int 0)
+		    (const_int 6) (const_int 2)])))]
   "TARGET_XTHEAD_ZPN && TARGET_64BIT"
   "pkbb16\t%0,%1,%2"
 )
@@ -1874,8 +1812,8 @@
 	(vec_select:V4HI
 	 (vec_concat:V8HI (match_operand:V4HI 1 "register_operand" "r")
 			  (match_operand:V4HI 2 "register_operand" "r"))
-	 (parallel [(const_int 0) (const_int 5)
-		    (const_int 2) (const_int 7)])))]
+	 (parallel [(const_int 5) (const_int 0)
+		    (const_int 7) (const_int 2)])))]
   "TARGET_XTHEAD_ZPN && TARGET_64BIT"
   "pkbt16\t%0,%1,%2"
 )
@@ -1919,8 +1857,8 @@
 	(vec_select:V4HI
 	 (vec_concat:V8HI (match_operand:V4HI 1 "register_operand" "r")
 			  (match_operand:V4HI 2 "register_operand" "r"))
-	 (parallel [(const_int 1) (const_int 4)
-		    (const_int 3) (const_int 6)])))]
+	 (parallel [(const_int 4) (const_int 1)
+		    (const_int 6) (const_int 3)])))]
   "TARGET_XTHEAD_ZPN && TARGET_64BIT"
   "pktb16\t%0,%1,%2"
 )
@@ -1964,8 +1902,8 @@
 	(vec_select:V4HI
 	 (vec_concat:V8HI (match_operand:V4HI 1 "register_operand" "r")
 			  (match_operand:V4HI 2 "register_operand" "r"))
-	 (parallel [(const_int 1) (const_int 5)
-		    (const_int 3) (const_int 7)])))]
+	 (parallel [(const_int 5) (const_int 1)
+		    (const_int 7) (const_int 3)])))]
   "TARGET_XTHEAD_ZPN && TARGET_64BIT"
   "pktt16\t%0,%1,%2"
 )
@@ -4290,7 +4228,7 @@
 	      (sign_extend:DI
 		(vec_select:QI (match_dup 3) (parallel [(const_int 7)])))))))]
   "TARGET_XTHEAD_ZPN && TARGET_64BIT"
-  "pbsada\\t%0,%1,%2"
+  "pbsada\\t%0,%2,%3"
 )
 
 ;;---------------- 8-bit Multiply with 32-bit Add Instructions ----------------
@@ -6805,7 +6743,7 @@
 	      (const_int 2)))
 	  (match_operand: V2SI 1 "register_operand" "0")))]
   "TARGET_XTHEAD_ZPRVSFEXTRA"
-  "kdmabb16\t%0,%1,%2"
+  "kdmabb16\t%0,%2,%3"
 )
 
 ;;Implement: kdmabt16

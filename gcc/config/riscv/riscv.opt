@@ -184,6 +184,14 @@ Mask(VECTOR)
 
 Mask(RVZFH)
 
+Mask(ZFBFMIN)
+
+Mask(ZVFBFMIN)
+
+Mask(ZVFBFWMA)
+
+Mask(RVZFA)
+
 ; T-Head mask
 
 Mask(XTHEAD)
@@ -195,6 +203,8 @@ Mask(XTHEAD_E)
 Mask(XTHEAD_SE)
 
 Mask(XTHEAD_V)
+
+Mask(MATRIX)
 
 ; T-Head extension
 
@@ -354,6 +364,10 @@ mcombine-cse
 Target Var(riscv_combine_cse) Init(1) Undocumented
 Do CSE optimization when the result of combine are two SET insns.
 
+mriscv_fli_value_by_int
+Target Var(riscv_fli_value_by_int) Init(0) Undocumented
+The fli instruction in the zfa extension uses integers to represent floating-point values.
+
 ; T-Head compatibility
 
 m4k-opts
@@ -403,6 +417,9 @@ int riscv_bitmanip_subext
 
 TargetVariable
 int riscv_zi_subext
+
+TargetVariable
+int riscv_zc_subext
 
 Enum
 Name(isa_spec_class) Type(enum riscv_isa_spec_class)

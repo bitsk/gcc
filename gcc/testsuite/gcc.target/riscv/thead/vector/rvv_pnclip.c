@@ -1,5 +1,5 @@
 /* { dg-do compile } */
-/* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv*xtheadvdot*" } } */
+/* { dg-options "-march=rv64gcvxtheadvdot -mabi=lp64d" } */
 
 #include <riscv_vector.h>
 #include <stddef.h>

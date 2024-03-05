@@ -418,7 +418,8 @@ enum excess_precision_type
 {
   EXCESS_PRECISION_TYPE_IMPLICIT,
   EXCESS_PRECISION_TYPE_STANDARD,
-  EXCESS_PRECISION_TYPE_FAST
+  EXCESS_PRECISION_TYPE_FAST,
+  EXCESS_PRECISION_TYPE_FLOAT16
 };
 
 /* Support for user-provided GGC and PCH markers.  The first parameter

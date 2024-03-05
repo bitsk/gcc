@@ -1,5 +1,5 @@
 /* { dg-do compile } */
-/* { dg-options "-march=rv32gc_zbb -mabi=ilp32 -O2" } */
+/* { dg-options "-march=rv64gcp -mabi=lp64 -O2" } */
 
 unsigned int
 clzl (unsigned int i)

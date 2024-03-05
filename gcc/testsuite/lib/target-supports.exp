@@ -3143,6 +3143,22 @@ proc check_effective_target_base_quadfloat_support { } {
     return 1
 }
 
+# Return 1 if the target supports the __bf16 type, 0 otherwise.
+
+proc check_effective_target_bfloat16 {} {
+    return [check_no_compiler_messages_nocache bfloat16 object {
+	__bf16 foo (__bf16 x) { return x + x; }
+    } [add_options_for_bfloat16 ""]]
+}
+
+proc check_effective_target_bfloat16_runtime {} {
+    return [check_effective_target_bfloat16]
+}
+
+proc add_options_for_bfloat16 { flags } {
+    return "$flags"
+}
+
 # Return 1 if the target supports all four forms of fused multiply-add
 # (fma, fms, fnma, and fnms) for both float and double.
 
@@ -9243,7 +9259,10 @@ proc check_effective_target_c++2a_only { } {
     return 0
 }
 proc check_effective_target_c++2a { } {
-    return [check_effective_target_c++2a_only]
+    if [check_effective_target_c++2a_only] {
+	return 1
+    }
+    return [check_effective_target_c++23]
 }
 
 proc check_effective_target_c++20_only { } {
@@ -9252,6 +9271,29 @@ proc check_effective_target_c++20_only { } {
 
 proc check_effective_target_c++20 { } {
     return [check_effective_target_c++2a]
+}
+proc check_effective_target_c++20_down { } {
+    if ![check_effective_target_c++] {
+	return 0
+    }
+    return [expr ![check_effective_target_c++23] ]
+}
+
+proc check_effective_target_c++23_only { } {
+    global cxx_default
+    if ![check_effective_target_c++] {
+	return 0
+    }
+    if [check-flags { { } { } { -std=c++23 -std=gnu++23 -std=c++2b -std=gnu++2b } }] {
+	return 1
+    }
+    if { $cxx_default == "c++23" && [check-flags { { } { } { } { -std=* } }] } {
+	return 1
+    }
+    return 0
+}
+proc check_effective_target_c++23 { } {
+    return [check_effective_target_c++23_only]
 }
 
 # Check for C++ Concepts support, i.e. -fconcepts flag.
@@ -9574,6 +9616,44 @@ proc check_effective_target_fenv_exceptions {} {
 	# error Missing FE_UNDERFLOW
 	#endif
 	volatile float a = 0.0f, r;
+	int
+	main (void)
+	{
+	  r = a / a;
+	  if (fetestexcept (FE_INVALID))
+	    exit (0);
+	  else
+	    abort ();
+	}
+    } [add_options_for_ieee "-std=gnu99"]]
+}
+
+# Return 1 if <fenv.h> is available with all the standard IEEE
+# exceptions and floating-point exceptions are raised by arithmetic
+# operations for decimal floating point.  (If the target requires
+# special options for "inexact" exceptions, those need to be specified
+# in the testcases.)
+
+proc check_effective_target_fenv_exceptions_dfp {} {
+    return [check_runtime fenv_exceptions_dfp {
+	#include <fenv.h>
+	#include <stdlib.h>
+	#ifndef FE_DIVBYZERO
+	# error Missing FE_DIVBYZERO
+	#endif
+	#ifndef FE_INEXACT
+	# error Missing FE_INEXACT
+	#endif
+	#ifndef FE_INVALID
+	# error Missing FE_INVALID
+	#endif
+	#ifndef FE_OVERFLOW
+	# error Missing FE_OVERFLOW
+	#endif
+	#ifndef FE_UNDERFLOW
+	# error Missing FE_UNDERFLOW
+	#endif
+	volatile _Decimal64 a = 0.0DD, r;
 	int
 	main (void)
 	{
@@ -10415,4 +10495,27 @@ proc check_effective_target_riscv_rvv_v0p7 { } {
 	    #error FOO
 	    #endif
 	    }]
+}
+
+# Return 1 if this is an RISCV target supporting atomic.
+proc check_effective_target_riscv_atomic { } {
+    return [check_no_compiler_messages riscv_atomic assembly {
+	    #if !defined (__riscv_atomic)
+	    #error FOO
+	    #endif
+	    }]
+}
+
+# Return 1 if this is an RISCV target supporting RVV fixed.
+proc check_effective_target_riscv_rvv_fixed { } {
+    if { ![istarget riscv*-*-*] } {
+	return 0
+    }
+    return [check_no_compiler_messages riscv_rvv assembly {
+	#if !defined (__riscv_vector)
+	#error FOO
+	#endif
+
+	struct rvv_fixed {vint32m1_t va;};
+    }]
 }

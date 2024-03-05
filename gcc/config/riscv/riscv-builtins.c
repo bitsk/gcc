@@ -169,7 +169,12 @@ struct riscv_builtin_description {
 
 AVAIL (hard_float, TARGET_HARD_FLOAT)
 AVAIL (vector, TARGET_VECTOR)
+AVAIL (zvbf, TARGET_VECTOR && (TARGET_ZVFBFMIN || TARGET_ZVFBFWMA))
+AVAIL (zvbfmin, TARGET_VECTOR && TARGET_ZVFBFMIN)
+AVAIL (zvfbfwma, TARGET_VECTOR && TARGET_ZVFBFWMA)
+AVAIL (matrix, TARGET_MATRIX)
 AVAIL (dsp, TARGET_XTHEAD_DSP)
+AVAIL (zfa, TARGET_RVZFA)
 AVAIL (zpsfoperand, TARGET_XTHEAD_ZPSFOPERAND)
 AVAIL (dsp32, TARGET_XTHEAD_DSP && !TARGET_64BIT)
 AVAIL (dsp64, TARGET_XTHEAD_DSP && TARGET_64BIT)
@@ -179,6 +184,7 @@ DECL_CHECKER(vector_tuple_insert)
 DECL_CHECKER(vector_extract)
 DECL_CHECKER(vector_tuple_extract)
 DECL_CHECKER(vector_v0p7)
+DECL_CHECKER(vector_support_rv32)
 
 /* Construct a riscv_builtin_description from the given arguments.
 
@@ -279,6 +285,15 @@ DECL_CHECKER(vector_v0p7)
 #define RISCV_ATYPE_SI int32_type_node
 #define RISCV_ATYPE_DI int64_type_node
 #define RISCV_ATYPE_SIZE size_type_node
+
+#define RISCV_ATYPE_UINT8 unsigned_int8_type_node
+#define RISCV_ATYPE_UINT16 unsigned_int16_type_node
+#define RISCV_ATYPE_UINT32 unsigned_int32_type_node
+#define RISCV_ATYPE_UINT64 unsigned_int64_type_node
+#define RISCV_ATYPE_INT8 int8_type_node
+#define RISCV_ATYPE_INT16 int16_type_node
+#define RISCV_ATYPE_INT32 int32_type_node
+#define RISCV_ATYPE_INT64 int64_type_node
 #define RISCV_ATYPE_LONG long_integer_type_node
 
 #define RISCV_ATYPE_PTRDIFF ptrdiff_type_node
@@ -301,14 +316,17 @@ DECL_CHECKER(vector_v0p7)
 #define RISCV_ATYPE_C_USI_PTR const_unsigned_intSI_ptr_type_node
 #define RISCV_ATYPE_C_UDI_PTR const_unsigned_intDI_ptr_type_node
 
+#define RISCV_ATYPE_BF bf16_type_node
 #define RISCV_ATYPE_HF fp16_type_node
 #define RISCV_ATYPE_SF float_type_node
 #define RISCV_ATYPE_DF double_type_node
 
+#define RISCV_ATYPE_BF_PTR bfloat16_ptr_type_node
 #define RISCV_ATYPE_HF_PTR float16_ptr_type_node
 #define RISCV_ATYPE_SF_PTR float_ptr_type_node
 #define RISCV_ATYPE_DF_PTR double_ptr_type_node
 
+#define RISCV_ATYPE_C_BF_PTR const_bfloat16_ptr_type_node
 #define RISCV_ATYPE_C_HF_PTR const_float16_ptr_type_node
 #define RISCV_ATYPE_C_SF_PTR const_float_ptr_type_node
 #define RISCV_ATYPE_C_DF_PTR const_double_ptr_type_node
@@ -319,6 +337,12 @@ DECL_CHECKER(vector_v0p7)
 #define RISCV_ATYPE_VF16M2 rvvfloat16m2_t_node
 #define RISCV_ATYPE_VF16M4 rvvfloat16m4_t_node
 #define RISCV_ATYPE_VF16M8 rvvfloat16m8_t_node
+#define RISCV_ATYPE_VBF16Mf4 rvvbfloat16mf4_t_node
+#define RISCV_ATYPE_VBF16Mf2 rvvbfloat16mf2_t_node
+#define RISCV_ATYPE_VBF16M1 rvvbfloat16m1_t_node
+#define RISCV_ATYPE_VBF16M2 rvvbfloat16m2_t_node
+#define RISCV_ATYPE_VBF16M4 rvvbfloat16m4_t_node
+#define RISCV_ATYPE_VBF16M8 rvvbfloat16m8_t_node
 #define RISCV_ATYPE_VF32Mf2 rvvfloat32mf2_t_node
 #define RISCV_ATYPE_VF32M1 rvvfloat32m1_t_node
 #define RISCV_ATYPE_VF32M2 rvvfloat32m2_t_node
@@ -505,12 +529,31 @@ DECL_CHECKER(vector_v0p7)
 #define RISCV_ATYPE_VUI64M4X2 rvvuint64m4x2_t_node
 #define RISCV_ATYPE_VF64M4X2  rvvfloat64m4x2_t_node
 
+#define RISCV_ATYPE_MINT8  rvmint8_t_node
+#define RISCV_ATYPE_MINT16  rvmint16_t_node
+#define RISCV_ATYPE_MINT32  rvmint32_t_node
+#define RISCV_ATYPE_MINT64  rvmint64_t_node
+#define RISCV_ATYPE_MUINT8  rvmuint8_t_node
+#define RISCV_ATYPE_MUINT16  rvmuint16_t_node
+#define RISCV_ATYPE_MUINT32  rvmuint32_t_node
+#define RISCV_ATYPE_MUINT64  rvmuint64_t_node
+#define RISCV_ATYPE_MFLOAT16  rvmfloat16_t_node
+#define RISCV_ATYPE_MFLOAT32  rvmfloat32_t_node
+#define RISCV_ATYPE_MFLOAT64  rvmfloat64_t_node
+#define RISCV_ATYPE_MFLOAT16X2  rvmfloat16x2_t_node
+#define RISCV_ATYPE_MFLOAT32X2  rvmfloat32x2_t_node
+#define RISCV_ATYPE_MFLOAT64X2  rvmfloat64x2_t_node
+
 /* Helper type nodes for vector support.  */
 tree const_float_ptr_type_node;
 tree const_double_ptr_type_node;
 tree float16_ptr_type_node;
 tree const_float16_type_node;
 tree const_float16_ptr_type_node;
+
+tree bfloat16_ptr_type_node;
+tree const_bfloat16_type_node;
+tree const_bfloat16_ptr_type_node;
 
 #define DECLARE_SCALAR_INT_PTR_TYPE_NODE(WIDTH, MODE)	\
   tree int##WIDTH##_type_node;				\
@@ -528,6 +571,33 @@ _SCALAR_INT_ITERATOR(DECLARE_SCALAR_INT_PTR_TYPE_NODE)
   tree rvvint##SEW##m##LMUL##_t_node;	\
   tree rvvuint##SEW##m##LMUL##_t_node;
 _RVV_INT_ITERATOR(RISCV_DECL_INT_TYPES)
+
+/* bf16 type nodes. */
+tree rvvbfloat16mf4_t_node;
+tree rvvbfloat16mf2_t_node;
+tree rvvbfloat16m1_t_node;
+tree rvvbfloat16m2_t_node;
+tree rvvbfloat16m4_t_node;
+tree rvvbfloat16m8_t_node;
+
+/* Matrix type nodes. */
+tree  rvmint8_t_node;
+tree  rvmint16_t_node;
+tree  rvmint32_t_node;
+tree  rvmint64_t_node;
+
+tree  rvmuint8_t_node;
+tree  rvmuint16_t_node;
+tree  rvmuint32_t_node;
+tree  rvmuint64_t_node;
+
+tree  rvmfloat16_t_node;
+tree  rvmfloat32_t_node;
+tree  rvmfloat64_t_node;
+
+tree  rvmfloat16x2_t_node;
+tree  rvmfloat32x2_t_node;
+tree  rvmfloat64x2_t_node;
 
 #define RISCV_DECL_FLOAT_TYPES(SEW, LMUL, MLEN,	MODE, SUBMODE) \
   tree rvvfloat##SEW##m##LMUL##_t_node;
@@ -753,6 +823,61 @@ _RVV_SEG_ARG (RISCV_DECL_SEG_TYPES, X)
   _VINT_INDEX_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, U##SUBMODE,	\
 				   IE, IL, IMODE, ISUBMODE, di, u, VUI)
 
+#define _VINT_INDEX_64_LOAD_STORE_BUILTINS(E, L, MLEN, MODE, SUBMODE,		\
+					IE, IL, IMODE, ISUBMODE,		\
+					PNAME, TYPE_US, VCLASS)			\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vloxei##MODE##IMODE##_##PNAME,						\
+    vloxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME,				\
+    RISCV_##VCLASS##E##M##L##_FTYPE_C_##SUBMODE##_PTR##_VUI##IE##M##IL,		\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vloxei##MODE##IMODE##_##PNAME##_mask,					\
+    vloxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME##_mask,			\
+    RISCV_##VCLASS##E##M##L##_FTYPE_VB##MLEN##_##VCLASS##E##M##L##_C_##SUBMODE##_PTR##_VUI##IE##M##IL,\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vluxei##MODE##IMODE##_##PNAME,						\
+    vluxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME,				\
+    RISCV_##VCLASS##E##M##L##_FTYPE_C_##SUBMODE##_PTR##_VUI##IE##M##IL,		\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vluxei##MODE##IMODE##_##PNAME##_mask,					\
+    vluxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME##_mask,			\
+    RISCV_##VCLASS##E##M##L##_FTYPE_VB##MLEN##_##VCLASS##E##M##L##_C_##SUBMODE##_PTR##_VUI##IE##M##IL,\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsoxei##MODE##IMODE##_##PNAME,						\
+    vsoxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME,				\
+    RISCV_VOID_FTYPE_##SUBMODE##_PTR##_VUI##IE##M##IL##_##VCLASS##E##M##L,	\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsoxei##MODE##IMODE##_##PNAME##_mask,					\
+    vsoxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME##_mask,			\
+    RISCV_VOID_FTYPE_VB##MLEN##_##SUBMODE##_PTR##_VUI##IE##M##IL##_##VCLASS##E##M##L,\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsuxei##MODE##IMODE##_##PNAME,						\
+    vsuxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME,				\
+    RISCV_VOID_FTYPE_##SUBMODE##_PTR##_VUI##IE##M##IL##_##VCLASS##E##M##L,	\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsuxei##MODE##IMODE##_##PNAME##_mask,					\
+    vsuxei##TYPE_US##E##m##L##_##IE##m##IL##_##PNAME##_mask,			\
+    RISCV_VOID_FTYPE_VB##MLEN##_##SUBMODE##_PTR##_VUI##IE##M##IL##_##VCLASS##E##M##L,\
+    vector, vector_support_rv32),
+
+#define VINT_INDEX_64_LOAD_STORE_BUILTINS(E, L, MLEN, MODE, SUBMODE,	\
+				       IE, IL, IMODE, ISUBMODE)		\
+  _VINT_INDEX_64_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, SUBMODE,		\
+				   IE, IL, IMODE, ISUBMODE, si, i, VI)	\
+  _VINT_INDEX_64_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, SUBMODE,		\
+				   IE, IL, IMODE, ISUBMODE, di, i, VI)	\
+  _VINT_INDEX_64_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, U##SUBMODE,	\
+				   IE, IL, IMODE, ISUBMODE, si, u, VUI)	\
+  _VINT_INDEX_64_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, U##SUBMODE,	\
+				   IE, IL, IMODE, ISUBMODE, di, u, VUI)
+
 #define _VFLOAT_INDEX_LOAD_STORE_BUILTINS(E, L, MLEN, MODE, SUBMODE,		\
 					  IE, IL, IMODE, ISUBMODE, PNAME)	\
   DIRECT_NAMED (								\
@@ -801,6 +926,56 @@ _RVV_SEG_ARG (RISCV_DECL_SEG_TYPES, X)
   _VFLOAT_INDEX_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, SUBMODE,		\
 				     IE, IL, IMODE, ISUBMODE, si)	\
   _VFLOAT_INDEX_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, SUBMODE,		\
+				     IE, IL, IMODE, ISUBMODE, di)
+
+#define _VFLOAT_INDEX_64_LOAD_STORE_BUILTINS(E, L, MLEN, MODE, SUBMODE,		\
+					  IE, IL, IMODE, ISUBMODE, PNAME)	\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vloxei##MODE##IMODE##_##PNAME,						\
+    vloxeif##E##m##L##_##IE##m##IL##_##PNAME,					\
+    RISCV_VF##E##M##L##_FTYPE_C_##SUBMODE##_PTR##_VUI##IE##M##IL,		\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vloxei##MODE##IMODE##_##PNAME##_mask,					\
+    vloxeif##E##m##L##_##IE##m##IL##_##PNAME##_mask,				\
+    RISCV_VF##E##M##L##_FTYPE_VB##MLEN##_VF##E##M##L##_C_##SUBMODE##_PTR##_VUI##IE##M##IL,\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vluxei##MODE##IMODE##_##PNAME,						\
+    vluxeif##E##m##L##_##IE##m##IL##_##PNAME,					\
+    RISCV_VF##E##M##L##_FTYPE_C_##SUBMODE##_PTR##_VUI##IE##M##IL,		\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_WITH_CHECKER (								\
+    vluxei##MODE##IMODE##_##PNAME##_mask,					\
+    vluxeif##E##m##L##_##IE##m##IL##_##PNAME##_mask,				\
+    RISCV_VF##E##M##L##_FTYPE_VB##MLEN##_VF##E##M##L##_C_##SUBMODE##_PTR##_VUI##IE##M##IL,\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsoxei##MODE##IMODE##_##PNAME,						\
+    vsoxeif##E##m##L##_##IE##m##IL##_##PNAME,					\
+    RISCV_VOID_FTYPE_##SUBMODE##_PTR##_VUI##IE##M##IL##_VF##E##M##L,		\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsoxei##MODE##IMODE##_##PNAME##_mask,					\
+    vsoxeif##E##m##L##_##IE##m##IL##_##PNAME##_mask,				\
+    RISCV_VOID_FTYPE_VB##MLEN##_##SUBMODE##_PTR##_VUI##IE##M##IL##_VF##E##M##L,\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsuxei##MODE##IMODE##_##PNAME,						\
+    vsuxeif##E##m##L##_##IE##m##IL##_##PNAME,					\
+    RISCV_VOID_FTYPE_##SUBMODE##_PTR##_VUI##IE##M##IL##_VF##E##M##L,		\
+    vector, vector_support_rv32),									\
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (							\
+    vsuxei##MODE##IMODE##_##PNAME##_mask,					\
+    vsuxeif##E##m##L##_##IE##m##IL##_##PNAME##_mask,				\
+    RISCV_VOID_FTYPE_VB##MLEN##_##SUBMODE##_PTR##_VUI##IE##M##IL##_VF##E##M##L,\
+    vector, vector_support_rv32),
+
+#define VFLOAT_INDEX_64_LOAD_STORE_BUILTINS(E, L, MLEN, MODE, SUBMODE,	\
+					 IE, IL, IMODE, ISUBMODE)	\
+  _VFLOAT_INDEX_64_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, SUBMODE,		\
+				     IE, IL, IMODE, ISUBMODE, si)	\
+  _VFLOAT_INDEX_64_LOAD_STORE_BUILTINS (E, L, MLEN, MODE, SUBMODE,		\
 				     IE, IL, IMODE, ISUBMODE, di)
 
 #define _VINT_VRGATHEREI_BUILTINS(E, L, MLEN, MODE, SUBMODE,		\
@@ -1955,29 +2130,17 @@ _RVV_SEG_ARG (RISCV_DECL_SEG_TYPES, X)
 		vector),
 
 #define VINT_SLIDE1_BUILTINS(E, L, MLEN, MODE, SUBMODE, OP)	\
-  DIRECT_NAMED (OP##MODE##si, OP##int##E##m##L##_si,		\
-		RISCV_VI##E##M##L##_FTYPE_VI##E##M##L##_LONG,	\
+  DIRECT_NAMED (OP##MODE, OP##int##E##m##L##_int##E,		\
+		RISCV_VI##E##M##L##_FTYPE_VI##E##M##L##_INT##E,	\
 		vector),					\
-  DIRECT_NAMED (OP##MODE##di, OP##int##E##m##L##_di,		\
-		RISCV_VI##E##M##L##_FTYPE_VI##E##M##L##_LONG,	\
+  DIRECT_NAMED (OP##MODE, OP##u##E##m##L##_uint##E,		\
+		RISCV_VUI##E##M##L##_FTYPE_VUI##E##M##L##_UINT##E,	\
 		vector),					\
-  DIRECT_NAMED (OP##MODE##si, OP##u##E##m##L##_si,		\
-		RISCV_VUI##E##M##L##_FTYPE_VUI##E##M##L##_LONG,	\
+  DIRECT_NAMED (OP##MODE##_mask, OP##int##E##m##L##_int##E##_mask,	\
+		RISCV_VI##E##M##L##_FTYPE_VB##MLEN##_VI##E##M##L##_VI##E##M##L##_INT##E,\
 		vector),					\
-  DIRECT_NAMED (OP##MODE##di, OP##u##E##m##L##_di,		\
-		RISCV_VUI##E##M##L##_FTYPE_VUI##E##M##L##_LONG,	\
-		vector),					\
-  DIRECT_NAMED (OP##MODE##si_mask, OP##int##E##m##L##_si_mask,	\
-		RISCV_VI##E##M##L##_FTYPE_VB##MLEN##_VI##E##M##L##_VI##E##M##L##_LONG,\
-		vector),					\
-  DIRECT_NAMED (OP##MODE##di_mask, OP##int##E##m##L##_di_mask,	\
-		RISCV_VI##E##M##L##_FTYPE_VB##MLEN##_VI##E##M##L##_VI##E##M##L##_LONG,\
-		vector),					\
-  DIRECT_NAMED (OP##MODE##si_mask, OP##u##E##m##L##_si_mask,	\
-		RISCV_VUI##E##M##L##_FTYPE_VB##MLEN##_VUI##E##M##L##_VUI##E##M##L##_LONG,\
-		vector),					\
-  DIRECT_NAMED (OP##MODE##di_mask, OP##u##E##m##L##_di_mask,	\
-		RISCV_VUI##E##M##L##_FTYPE_VB##MLEN##_VUI##E##M##L##_VUI##E##M##L##_LONG,\
+  DIRECT_NAMED (OP##MODE##_mask, OP##u##E##m##L##_uint##E##_mask,	\
+		RISCV_VUI##E##M##L##_FTYPE_VB##MLEN##_VUI##E##M##L##_VUI##E##M##L##_UINT##E,\
 		vector),
 
 #define VFLOAT_SLIDE_BUILTINS(E, L, MLEN, MODE, SUBMODE, OP)	\
@@ -2175,6 +2338,42 @@ _RVV_SEG_ARG (RISCV_DECL_SEG_TYPES, X)
   _VINT_INDEX_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, U##SUBMODE,\
 				       IE, IL, IMODE, ISUBMODE, di, u, VUI, ORDER)
 
+
+#define _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS(E, L, NF, MLEN, MODE, SUBMODE,\
+					    IE, IL, IMODE, ISUBMODE,	\
+					    PNAME, TYPE_US, VCLASS, ORDER)	\
+  DIRECT_NAMED_WITH_CHECKER (							\
+    vseg_idx_##ORDER##load##MODE##IMODE##_##PNAME,                               \
+    vseg_idx_##ORDER##load##TYPE_US##E##m##L##x##NF##_##IE##m##IL##_##PNAME,     \
+    RISCV_##VCLASS##E##M##L##X##NF##_FTYPE_C_##SUBMODE##_PTR_VUI##IE##M##IL,\
+    vector, vector_support_rv32),                                                            \
+  DIRECT_NAMED_WITH_CHECKER (                                                       \
+    vseg_idx_##ORDER##load##MODE##IMODE##_##PNAME##_mask,                              \
+    vseg_idx_##ORDER##load##TYPE_US##E##m##L##x##NF##_##IE##m##IL##_##PNAME##_mask,           \
+    RISCV_##VCLASS##E##M##L##X##NF##_FTYPE_VB##MLEN##_##VCLASS##E##M##L##X##NF##_C_##SUBMODE##_PTR_VUI##IE##M##IL,       \
+    vector, vector_support_rv32),                                                           \
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (                                             \
+    vseg_idx_##ORDER##store##MODE##IMODE##_##PNAME,                            \
+    vseg_idx_##ORDER##store##TYPE_US##E##m##L##x##NF##_##IE##m##IL##_##PNAME,                 \
+    RISCV_VOID_FTYPE_##VCLASS##E##M##L##X##NF##_##SUBMODE##_PTR_VUI##IE##M##IL,  \
+    vector, vector_support_rv32),                                                           \
+  DIRECT_NAMED_NO_TARGET_WITH_CHECKER (                                             \
+    vseg_idx_##ORDER##store##MODE##IMODE##_##PNAME##_mask,                                     \
+    vseg_idx_##ORDER##store##TYPE_US##E##m##L##x##NF##_##IE##m##IL##_##PNAME##_mask,          \
+    RISCV_VOID_FTYPE_VB##MLEN##_##VCLASS##E##M##L##X##NF##_##SUBMODE##_PTR_VUI##IE##M##IL,       \
+    vector, vector_support_rv32),
+
+#define VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS(E, L, NF, MLEN, MODE, SUBMODE,\
+					   IE, IL, IMODE, ISUBMODE, ORDER)	\
+  _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, SUBMODE,	\
+				       IE, IL, IMODE, ISUBMODE, si, i, VI, ORDER)\
+  _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, SUBMODE,	\
+				       IE, IL, IMODE, ISUBMODE, di, i, VI, ORDER)\
+  _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, U##SUBMODE,\
+				       IE, IL, IMODE, ISUBMODE, si, u, VUI, ORDER)\
+  _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, U##SUBMODE,\
+				       IE, IL, IMODE, ISUBMODE, di, u, VUI, ORDER)
+
 #define VFLOAT_SEG_LOAD_STORE(SEW, LMUL, NF, MLEN,			\
 			      SMODE_PREFIX_UPPER, SMODE_PREFIX_LOWER,	\
 			      VMODE_PREFIX_UPPER, VMODE_PREFIX_LOWER, XX)\
@@ -2188,6 +2387,13 @@ _RVV_SEG_ARG (RISCV_DECL_SEG_TYPES, X)
   _VINT_INDEX_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, SUBMODE,	\
 				       IE, IL, IMODE, ISUBMODE, si, f, VF, ORDER)\
   _VINT_INDEX_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, SUBMODE,	\
+				       IE, IL, IMODE, ISUBMODE, di, f, VF, ORDER)\
+
+#define VFLOAT_INDEX_64_SEG_LOAD_STORE_BUILTINS(E, L, NF, MLEN, MODE, SUBMODE,\
+					   IE, IL, IMODE, ISUBMODE, ORDER)	\
+  _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, SUBMODE,	\
+				       IE, IL, IMODE, ISUBMODE, si, f, VF, ORDER)\
+  _VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS (E, L, NF, MLEN, MODE, SUBMODE,	\
 				       IE, IL, IMODE, ISUBMODE, di, f, VF, ORDER)\
 
 #define VINT_SEG_INSERT(SEW, LMUL, NF, MLEN,				\
@@ -2404,6 +2610,13 @@ static const struct riscv_builtin_description riscv_builtins[] = {
   #include "config/riscv/riscv-builtins-p.def"
   #include "config/riscv/riscv-builtins-vector-v0p7.def"
   #include "config/riscv/riscv-builtins-vector-thead.def"
+  #include "config/riscv/riscv-builtins-matrix.def"
+  #include "config/riscv/riscv-builtins-vector-bf16.def"
+
+  DIRECT_NAMED (fminmsf3, fminmf, RISCV_SF_FTYPE_SF_SF, zfa),
+  DIRECT_NAMED (fminmdf3, fminm, RISCV_DF_FTYPE_DF_DF, zfa),
+  DIRECT_NAMED (fmaxmsf3, fmaxmf, RISCV_SF_FTYPE_SF_SF, zfa),
+  DIRECT_NAMED (fmaxmdf3, fmaxm, RISCV_DF_FTYPE_DF_DF, zfa),
 
   DIRECT_BUILTIN (frflags, RISCV_USI_FTYPE, hard_float),
   DIRECT_NO_TARGET_BUILTIN (fsflags, RISCV_VOID_FTYPE_USI, hard_float),
@@ -2425,6 +2638,9 @@ static const struct riscv_builtin_description riscv_builtins[] = {
 
   _RVV_INT_INDEX_ITERATOR (VINT_INDEX_LOAD_STORE_BUILTINS)
   _RVV_FLOAT_INDEX_ITERATOR (VFLOAT_INDEX_LOAD_STORE_BUILTINS)
+
+  _RVV_INT_INDEX_64_ITERATOR (VINT_INDEX_64_LOAD_STORE_BUILTINS)
+  _RVV_FLOAT_INDEX_64_ITERATOR (VFLOAT_INDEX_64_LOAD_STORE_BUILTINS)
 
   _RVV_INT_ITERATOR_ARG (VINT_BIN_OP_BUILTINS, add)
   _RVV_INT_ITERATOR_ARG (VINT_BIN_OP_BUILTINS, sub)
@@ -2649,6 +2865,11 @@ static const struct riscv_builtin_description riscv_builtins[] = {
   _RVV_SEG_FLOAT_INDEX_ITERATOR_ARG(VFLOAT_INDEX_SEG_LOAD_STORE_BUILTINS, o)
   _RVV_SEG_FLOAT_INDEX_ITERATOR_ARG(VFLOAT_INDEX_SEG_LOAD_STORE_BUILTINS, u)
 
+  _RVV_SEG_INT_INDEX_64_ITERATOR_ARG(VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS, o)
+  _RVV_SEG_INT_INDEX_64_ITERATOR_ARG(VINT_INDEX_64_SEG_LOAD_STORE_BUILTINS, u)
+  _RVV_SEG_FLOAT_INDEX_64_ITERATOR_ARG(VFLOAT_INDEX_64_SEG_LOAD_STORE_BUILTINS, o)
+  _RVV_SEG_FLOAT_INDEX_64_ITERATOR_ARG(VFLOAT_INDEX_64_SEG_LOAD_STORE_BUILTINS, u)
+
   _RVV_SEG_ARG(VINT_SEG_INSERT, )
   _RVV_SEG_NO_SEW8_ARG(VFLOAT_SEG_INSERT, )
 
@@ -2698,6 +2919,8 @@ static GTY(()) int riscv_builtin_decl_index[NUM_INSN_CODES];
 
 /* Type node for fp16.  */
 tree fp16_type_node;
+/* Type node for bf16.  */
+tree bf16_type_node;
 
 /* Return the function type associated with function prototype TYPE.  */
 
@@ -2894,6 +3117,21 @@ riscv_init_builtins (void)
   layout_type (fp16_type_node);
   (*lang_hooks.types.register_builtin_type) (fp16_type_node, "__fp16");
 
+  /* Provide the _bf16 type and bfloat16_type_node if needed.  */
+  if (!bfloat16_type_node)
+    {
+      bf16_type_node = make_node (REAL_TYPE);
+      TYPE_PRECISION (bf16_type_node) = 16;
+      SET_TYPE_MODE (bf16_type_node, BFmode);
+      layout_type (bf16_type_node);
+    }
+  else
+    bf16_type_node = bfloat16_type_node;
+
+  if (!maybe_get_identifier ("__bf16"))
+    lang_hooks.types.register_builtin_type (bf16_type_node,
+					    "__bf16");
+
   if (TARGET_VECTOR)
     {
       /* These types exist only for the ld/st intrinsics.  */
@@ -2905,6 +3143,11 @@ riscv_init_builtins (void)
       const_float16_type_node = build_type_variant (fp16_type_node, 1, 0);
       const_float16_ptr_type_node
 	= build_pointer_type (const_float16_type_node);
+
+      bfloat16_ptr_type_node = build_pointer_type (bf16_type_node);
+      const_bfloat16_type_node = build_type_variant (bf16_type_node, 1, 0);
+      const_bfloat16_ptr_type_node
+	= build_pointer_type (const_bfloat16_type_node);
 
       #define DEFINE_SCALAR_PTR_TYPE_NODE(WIDTH, MODE)			\
         int##MODE##_ptr_type_node					\
@@ -3051,6 +3294,19 @@ riscv_init_builtins (void)
       rvvfloat16m8_t_node
 	= riscv_vector_type ("vfloat16m8_t", fp16_type_node, VNx64HFmode);
 
+      rvvbfloat16mf4_t_node
+	= riscv_vector_type ("vbfloat16mf4_t", bf16_type_node, VNx2BFmode);
+      rvvbfloat16mf2_t_node
+	= riscv_vector_type ("vbfloat16mf2_t", bf16_type_node, VNx4BFmode);
+      rvvbfloat16m1_t_node
+	= riscv_vector_type ("vbfloat16m1_t", bf16_type_node, VNx8BFmode);
+      rvvbfloat16m2_t_node
+	= riscv_vector_type ("vbfloat16m2_t", bf16_type_node, VNx16BFmode);
+      rvvbfloat16m4_t_node
+	= riscv_vector_type ("vbfloat16m4_t", bf16_type_node, VNx32BFmode);
+      rvvbfloat16m8_t_node
+	= riscv_vector_type ("vbfloat16m8_t", bf16_type_node, VNx64BFmode);
+
       rvvfloat32mf2_t_node
 	= riscv_vector_type ("vfloat32mf2_t", float_type_node, VNx2SFmode);
       rvvfloat32m1_t_node
@@ -3113,6 +3369,51 @@ _RVV_SEG_NO_SEW8_ARG (RISCV_DEFINE_FSEG_TYPES, X)
 
 _RVV_SEG_ARG (RISCV_DEFINE_SEG_TYPES, X)
 
+    }
+
+  if(TARGET_MATRIX){
+
+      /* These types exist only for the ld/st intrinsics.  */
+      const_float_ptr_type_node
+	= build_pointer_type (build_type_variant (float_type_node, 1, 0));
+      const_double_ptr_type_node
+	= build_pointer_type (build_type_variant (double_type_node, 1, 0));
+      float16_ptr_type_node = build_pointer_type (fp16_type_node);
+      const_float16_type_node = build_type_variant (fp16_type_node, 1, 0);
+      const_float16_ptr_type_node
+	= build_pointer_type (const_float16_type_node);
+
+      #define DEFINE_SCALAR_PTR_TYPE_NODE(WIDTH, MODE)			\
+	int##MODE##_ptr_type_node					\
+	  = build_pointer_type (int##WIDTH##_type_node); 		\
+	unsigned_int##MODE##_ptr_type_node				\
+	  = build_pointer_type (unsigned_int##WIDTH##_type_node);	\
+	const_int##MODE##_ptr_type_node					\
+	  = build_pointer_type (					\
+	      build_type_variant (int##WIDTH##_type_node, 1, 0));	\
+	const_unsigned_int##MODE##_ptr_type_node			\
+	  = build_pointer_type (					\
+	      build_type_variant (unsigned_int##WIDTH##_type_node, 1, 0));
+
+      _SCALAR_INT_ITERATOR(DEFINE_SCALAR_PTR_TYPE_NODE);
+
+      rvmint8_t_node = riscv_vector_type ("mint8_t", intQI_type_node, M64QImode);
+      rvmint16_t_node = riscv_vector_type ("mint16_t", intHI_type_node, M32HImode);
+      rvmint32_t_node = riscv_vector_type ("mint32_t", intSI_type_node, M16SImode);
+      rvmint64_t_node = riscv_vector_type ("mint64_t", intDI_type_node, M8DImode);
+
+      rvmuint8_t_node = riscv_vector_type ("muint8_t", unsigned_intQI_type_node, M64QImode);
+      rvmuint16_t_node = riscv_vector_type ("muint16_t", unsigned_intHI_type_node, M32HImode);
+      rvmuint32_t_node = riscv_vector_type ("muint32_t", unsigned_intSI_type_node, M16SImode);
+      rvmuint64_t_node = riscv_vector_type ("muint64_t", unsigned_intDI_type_node, M8DImode);
+
+      rvmfloat16_t_node = riscv_vector_type ("mfloat16_t", fp16_type_node, M32HFmode);
+      rvmfloat32_t_node = riscv_vector_type ("mfloat32_t", float_type_node, M16SFmode);
+      rvmfloat64_t_node = riscv_vector_type ("mfloat64_t", double_type_node, M8DFmode);
+
+      rvmfloat16x2_t_node = riscv_vector_type ("mfloat16x2_t", fp16_type_node, M2x32HFmode);
+      rvmfloat32x2_t_node = riscv_vector_type ("mfloat32x2_t", float_type_node, M2x16SFmode);
+      rvmfloat64x2_t_node = riscv_vector_type ("mfloat64x2_t", double_type_node, M2x8DFmode);
     }
 
   for (size_t i = 0; i < ARRAY_SIZE (riscv_builtins); i++)
@@ -3402,7 +3703,7 @@ check_range (location_t loc, tree tuple, tree index, machine_mode emode)
 
   if(TREE_INT_CST_LOW (index) >= max)
     {
-      error_at (loc, "index %d is out of range, should be less than %d.",
+      error_at (loc, "index %lld is out of range, should be less than %d.",
 			TREE_INT_CST_LOW (index), max);
       return false;
     }
@@ -3419,7 +3720,7 @@ check_tuple_range (location_t loc, tree tuple, tree index)
   int nf = riscv_get_nf (tmode);
   if (TREE_INT_CST_LOW (index) >= nf)
     {
-      error_at (loc, "index %d is out of range, should be less than %d.",
+      error_at (loc, "index %lld is out of range, should be less than %d.",
 			TREE_INT_CST_LOW (index), nf);
       return false;
     }
@@ -3476,4 +3777,17 @@ DEF_CHECKER (vector_v0p7)
   if (!ret)
     error ("invalid function %s for vector v0.7.1", fname);
   return ret;
+}
+
+DEF_CHECKER (vector_support_rv32)
+{
+  if (!TARGET_64BIT)
+    {
+      tree fndecl = get_callee_fndecl (exp);
+      const char *fname = IDENTIFIER_POINTER (DECL_NAME (fndecl));
+      error ("Invalid function %s for vector on rv32", fname);
+      return false;
+    }
+
+  return true;
 }

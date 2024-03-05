@@ -1,5 +1,5 @@
 /* { dg-do compile } */
-/* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv32*v*" } } */
+/* { dg-options "-march=rv32gcv -mabi=ilp32d -O2 --save-temps" } */
 
 #include <riscv_vector.h>
 int32_t x_to_s(int32_t i, word_type vl)

@@ -1,0 +1,33 @@
+
+/* { dg-do assemble } */
+/* { dg-options "-march=rv32gcp -mabi=ilp32d -O3 --save-temps" } */
+
+#define N 4
+
+signed short a[N];
+signed short b[N];
+signed short c[N];
+unsigned short ua[N];
+unsigned short ub[N];
+unsigned short uc[N];
+
+void func()
+{
+  int i;
+  for (i=0;i<N;i++)
+   a[i]= b[i]<c[i] ? b[i] : c[i];
+}
+
+/* { dg-final { scan-assembler "smin16\t" } }*/
+
+void ufunc()
+{
+  int i;
+  for (i=0;i<N;i++)
+   ua[i]= ub[i]<uc[i] ? ub[i] : uc[i];
+}
+
+/* { dg-final { scan-assembler "umin16\t" } }*/
+
+/* { dg-final { cleanup-saved-temps } } */
+

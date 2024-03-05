@@ -2,7 +2,7 @@
 // https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/DSP/Source/FilteringFunctions/arm_fir_f32.c
 
 /* { dg-do compile } */
-/* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv*v*" } } */
+/* { dg-options "-march=rv64gcv -mabi=lp64d" } */
 
 #include <riscv_vector.h>
 #include <stddef.h>

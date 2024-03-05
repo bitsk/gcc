@@ -1,4 +1,5 @@
 /* { dg-do compile } */
+/* { dg-require-effective-target riscv_atomic }  */
 /* Verify that subword atomics do not generate calls.  */
 /* { dg-options "-minline-atomics" } */
 /* { dg-message "note: '__sync_fetch_and_nand' changed semantics in GCC 4.4" "fetch_and_nand" { target *-*-* } 0 } */

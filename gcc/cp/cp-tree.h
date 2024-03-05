@@ -209,10 +209,6 @@ enum cp_tree_index
 
     CPTI_SOURCE_LOCATION_IMPL,
 
-    CPTI_FALLBACK_DFLOAT32_TYPE,
-    CPTI_FALLBACK_DFLOAT64_TYPE,
-    CPTI_FALLBACK_DFLOAT128_TYPE,
-
     CPTI_MAX
 };
 
@@ -372,13 +368,6 @@ extern GTY(()) tree cp_global_trees[CPTI_MAX];
    access nodes in tree.h.  */
 
 #define access_default_node		null_node
-
-/* Variant of dfloat{32,64,128}_type_node only used for fundamental
-   rtti purposes if DFP is disabled.  */
-#define fallback_dfloat32_type		cp_global_trees[CPTI_FALLBACK_DFLOAT32_TYPE]
-#define fallback_dfloat64_type		cp_global_trees[CPTI_FALLBACK_DFLOAT64_TYPE]
-#define fallback_dfloat128_type		cp_global_trees[CPTI_FALLBACK_DFLOAT128_TYPE]
-
 
 #include "name-lookup.h"
 
@@ -7547,6 +7536,7 @@ extern tree require_complete_type_sfinae	(tree, tsubst_flags_t);
 extern tree complete_type			(tree);
 extern tree complete_type_or_else		(tree, tree);
 extern tree complete_type_or_maybe_complain	(tree, tree, tsubst_flags_t);
+extern int cp_compare_floating_point_conversion_ranks (tree, tree);
 inline bool type_unknown_p			(const_tree);
 enum { ce_derived, ce_type, ce_normal, ce_exact };
 extern bool comp_except_specs			(const_tree, const_tree, int);
@@ -8188,6 +8178,20 @@ struct push_nested_class_guard
       pop_nested_class ();
   }
 };
+
+/* True if TYPE is an extended floating-point type.  */
+
+inline bool
+extended_float_type_p (tree type)
+{
+  type = TYPE_MAIN_VARIANT (type);
+  for (int i = 0; i < NUM_FLOATN_NX_TYPES; ++i)
+    if (type == FLOATN_TYPE_NODE (i))
+      return true;
+  if (type == bfloat16_type_node)
+    return true;
+  return false;
+}
 
 #if CHECKING_P
 namespace selftest {

@@ -1150,6 +1150,14 @@ calls.
 It is recommended that portable code use the @code{_Float16} type defined
 by ISO/IEC TS 18661-3:2015.  @xref{Floating Types}.
 
+On x86 targets with SSE2 enabled, without @option{-mavx512fp16},
+@code{_Float16} type is storage only, all operations will be emulated by
+software emulation and the @code{float} instructions. The default behavior
+for @code{FLT_EVAL_METHOD} is to keep the intermediate result of the operation
+as 32-bit precision. This may lead to inconsistent behavior between software
+emulation and AVX512-FP16 instructions. Using @option{-fexcess-precision=16}
+will force round back after each operation.
+
 @node Decimal Float
 @section Decimal Floating Types
 @cindex decimal floating types
@@ -13683,6 +13691,18 @@ Similar to @code{__builtin_nan}, except the return type is
 Similar to @code{__builtin_nan}, except the significand is forced
 to be a signaling NaN@.  The @code{nans} function is proposed by
 @uref{http://www.open-std.org/jtc1/sc22/wg14/www/docs/n965.htm,,WG14 N965}.
+@end deftypefn
+
+@deftypefn {Built-in Function} _Decimal32 __builtin_nansd32 (const char *str)
+Similar to @code{__builtin_nans}, except the return type is @code{_Decimal32}.
+@end deftypefn
+
+@deftypefn {Built-in Function} _Decimal64 __builtin_nansd64 (const char *str)
+Similar to @code{__builtin_nans}, except the return type is @code{_Decimal64}.
+@end deftypefn
+
+@deftypefn {Built-in Function} _Decimal128 __builtin_nansd128 (const char *str)
+Similar to @code{__builtin_nans}, except the return type is @code{_Decimal128}.
 @end deftypefn
 
 @deftypefn {Built-in Function} float __builtin_nansf (const char *str)

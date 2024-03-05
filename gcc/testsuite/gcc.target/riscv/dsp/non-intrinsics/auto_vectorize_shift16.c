@@ -17,7 +17,7 @@ int c;
 unsigned short ua[N];
 unsigned short ub[N];
 
-int auto_sra()
+void auto_sra()
 {
   int i;
   for (i=0;i<N;i++)
@@ -26,7 +26,7 @@ int auto_sra()
 
 /* { dg-final { scan-assembler "sra16\t" } }*/
 
-int auto_srl()
+void auto_srl()
 {
   int i;
   for (i=0;i<N;i++)
@@ -35,7 +35,7 @@ int auto_srl()
 
 /* { dg-final { scan-assembler "srl16\t" } }*/
 
-int auto_sll()
+void auto_sll()
 {
   int i;
   for (i=0;i<N;i++)
@@ -44,7 +44,7 @@ int auto_sll()
 
 /* { dg-final { scan-assembler "sll16\t" } }*/
 
-int auto_srai()
+void auto_srai()
 {
   int i;
   for (i=0;i<N;i++)
@@ -53,7 +53,7 @@ int auto_srai()
 
 /* { dg-final { scan-assembler "srai16\t" } }*/
 
-int auto_srli()
+void auto_srli()
 {
   int i;
   for (i=0;i<N;i++)
@@ -62,7 +62,7 @@ int auto_srli()
 
 /* { dg-final { scan-assembler "srli16\t" } }*/
 
-int auto_slli()
+void auto_slli()
 {
   int i;
   for (i=0;i<N;i++)

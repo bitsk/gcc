@@ -43,6 +43,10 @@
   (ior (match_operand 0 "const_csr_operand")
        (match_operand 0 "register_operand")))
 
+(define_predicate "csr_address"
+  (and (match_code "const_int")
+       (match_test "IN_RANGE (INTVAL (op), 0, IMM_REACH-1)")))
+
 (define_predicate "sle_operand"
   (and (match_code "const_int")
        (match_test "SMALL_OPERAND (INTVAL (op) + 1)")))
@@ -170,7 +174,11 @@
       return !splittable_const_int_operand (op, mode);
 
     case CONST_POLY_INT:
-      return satisfies_constraint_vp (op);
+      return satisfies_constraint_vp (op) || satisfies_constraint_xp (op);
+
+    case CONST_DOUBLE:
+      return const_0_operand (op, mode)
+	      || (riscv_float_const_rtx_index_for_fli (op) != -1);
 
     case CONST:
     case SYMBOL_REF:
@@ -319,6 +327,15 @@
 (define_predicate "shift_d_operand"
   (and (match_code "const_int")
        (match_test "INTVAL (op) == 64")))
+
+;; Matrix
+(define_predicate "reg_or_const_int_operand"
+  (ior (match_operand 0 "const_int_operand")
+       (match_operand 0 "register_operand")))
+
+(define_predicate "reg_or_imm_operand"
+  (ior (match_operand 0 "immediate_operand")
+       (match_operand 0 "register_operand")))
 
 ;; P-ext predicates
 

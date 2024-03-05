@@ -13609,7 +13609,7 @@ generic_parameter_die (tree parm, tree arg,
   dw_die_ref tmpl_die = NULL;
   const char *name = NULL;
 
-  /* C++2a accepts class literals as template parameters, and var
+  /* C++20 accepts class literals as template parameters, and var
      decls with initializers represent them.  The VAR_DECLs would be
      rejected, but we can take the DECL_INITIAL constructor and
      attempt to expand it.  */
@@ -24500,6 +24500,10 @@ gen_producer_string (void)
 static const char *
 highest_c_language (const char *lang1, const char *lang2)
 {
+  if (strcmp ("GNU C++23", lang1) == 0 || strcmp ("GNU C++23", lang2) == 0)
+    return "GNU C++23";
+  if (strcmp ("GNU C++20", lang1) == 0 || strcmp ("GNU C++20", lang2) == 0)
+    return "GNU C++20";
   if (strcmp ("GNU C++17", lang1) == 0 || strcmp ("GNU C++17", lang2) == 0)
     return "GNU C++17";
   if (strcmp ("GNU C++14", lang1) == 0 || strcmp ("GNU C++14", lang2) == 0)
@@ -24604,7 +24608,9 @@ gen_compile_unit_die (const char *filename)
 	    language = DW_LANG_C_plus_plus_11;
 	  else if (strcmp (language_string, "GNU C++14") == 0)
 	    language = DW_LANG_C_plus_plus_14;
-	  else if (strcmp (language_string, "GNU C++17") == 0)
+	  else if (strcmp (language_string, "GNU C++17") == 0
+		   || strcmp (language_string, "GNU C++20") == 0
+		   || strcmp (language_string, "GNU C++23") == 0)
 	    /* For now.  */
 	    language = DW_LANG_C_plus_plus_14;
 	}

@@ -1,6 +1,5 @@
-/* { dg-do compile } */
-/* { dg-skip-if "test rvv" { *-*-* } { "*" } { "-march=rv*v*" } } */
-/* { dg-options "-std=gnu99" } */
+/* { dg-do compile { target { ! riscv_rvv_fixed } } } */
+/* { dg-options "-march=rv64gcv -mabi=lp64d -std=gnu99" } */
 
 #include <riscv_vector.h>
 

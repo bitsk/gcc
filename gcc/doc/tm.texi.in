@@ -736,6 +736,9 @@ options are changed via @code{#pragma GCC optimize} or by using the
 
 @hook TARGET_OPTION_INIT_STRUCT
 
+@hook TARGET_COMPUTE_MULTILIB
+
+
 @defmac SWITCHABLE_TARGET
 Some targets need to switch between substantially different subtargets
 during compilation.  For example, the MIPS target has one subtarget for
@@ -929,6 +932,9 @@ Do not define this macro if it would never modify @var{m}.
 @end defmac
 
 @hook TARGET_C_EXCESS_PRECISION
+Return a value, with the same meaning as the C99 macro
+@code{FLT_EVAL_METHOD} that describes which excess precision should be
+applied.
 
 @hook TARGET_PROMOTE_FUNCTION_MODE
 
@@ -1277,6 +1283,8 @@ pattern needs to support both a 32- and a 64-bit mode.
 @hook TARGET_INSTANTIATE_DECLS
 
 @hook TARGET_MANGLE_TYPE
+
+@hook TARGET_EMIT_SUPPORT_TINFOS
 
 @node Type Layout
 @section Layout of Source Language Data Types
@@ -3365,6 +3373,8 @@ stack.
 
 @hook TARGET_VECTOR_MODE_SUPPORTED_P
 
+@hook TARGET_VECTORIZE_MATCHED_MODE
+
 @hook TARGET_COMPATIBLE_VECTOR_TYPES_P
 
 @hook TARGET_ARRAY_MODE
@@ -4714,6 +4724,8 @@ them: try the first ones in this list first.
 @hook TARGET_SCHED_ISSUE_RATE
 
 @hook TARGET_SCHED_VARIABLE_ISSUE
+
+@hook TARGET_SCHED_ADJUST_UNRECOG_FOR_READY_LIST
 
 @hook TARGET_SCHED_ADJUST_COST
 

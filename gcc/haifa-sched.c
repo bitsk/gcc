@@ -6316,6 +6316,9 @@ prune_ready_list (state_t temp_state, bool first_cycle_insn_p,
 		      || asm_noperands (PATTERN (insn)) >= 0))
 		cost = 1;
 	      reason = "asm";
+
+	      if (!first_cycle_insn_p && targetm.sched.adjust_unrecog_for_ready_list)
+		targetm.sched.adjust_unrecog_for_ready_list (insn, &cost, &reason);
 	    }
 	  else if (sched_pressure != SCHED_PRESSURE_NONE)
 	    {

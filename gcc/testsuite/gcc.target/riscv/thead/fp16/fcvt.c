@@ -1,6 +1,5 @@
 /* { dg-do assemble } */
-/* { dg-skip-if "test float16 insns" { *-*-* } { "*" } { "-march=*zfh*" } } */
-/* { dg-options "--save-temps" } */
+/* { dg-options "-march=rv64gczfh -mabi=lp64d --save-temps" } */
 
 __fp16 func5(float a)
 {

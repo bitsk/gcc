@@ -20,10 +20,10 @@
 ;; CONSTRAINT
 ;; ==========
 
-(define_register_constraint "Qrf" "TARGET_XTHEAD_FMVHW32 ? FP_REGS : NO_REGS"
+(define_register_constraint "Qrf" "(TARGET_XTHEAD_FMVHW32 || TARGET_RVZFA) ? FP_REGS : NO_REGS"
   "A floating-point register (if available).")
 
-(define_register_constraint "Qrx" "TARGET_XTHEAD_FMVHW32 ? GR_REGS : NO_REGS"
+(define_register_constraint "Qrx" "(TARGET_XTHEAD_FMVHW32 || TARGET_RVZFA) ? GR_REGS : NO_REGS"
   "A integer register (if available).")
 
 (define_constraint "QcL"
@@ -40,6 +40,11 @@
   "A unsigned offset for second mem which for lwd/swd instructions."
   (and (match_code "const_int")
        (match_test "ival >= 4 && ival <= 20")))
+
+(define_constraint "Zf"
+  "A floating point number that can be loaded using instruction `fli` in zfa."
+  (and (match_code "const_double")
+       (match_test "(riscv_float_const_rtx_index_for_fli (op) != -1)")))
 
 (define_memory_constraint "Qmx"
   "@internal
@@ -139,7 +144,7 @@
 (define_code_iterator any_bitwise_butand [ior xor])
 
 ;; Main element type used by the insn
-(define_attr "emode" "unknown,QI,HI,SI,DI,HF,SF,DF"
+(define_attr "emode" "unknown,QI,HI,SI,DI,HF,BF,SF,DF"
   (const_string "unknown"))
 
 ;; ADDITION
@@ -949,8 +954,24 @@
 ;; TARGET_XTHEAD_IPUSH
 
 (define_insn "riscv_ipop"
-  [(return)
-   (unspec_volatile [(const_int 0)] UNSPECV_IPOP)]
+  [(unspec_volatile [(const_int 0)] UNSPECV_IPOP)
+   (clobber (reg:SI RETURN_ADDR_REGNUM))
+   (clobber (reg:SI T0_REGNUM))
+   (clobber (reg:SI T1_REGNUM))
+   (clobber (reg:SI T2_REGNUM))
+   (clobber (reg:SI A0_REGNUM))
+   (clobber (reg:SI A1_REGNUM))
+   (clobber (reg:SI A2_REGNUM))
+   (clobber (reg:SI A3_REGNUM))
+   (clobber (reg:SI A4_REGNUM))
+   (clobber (reg:SI A5_REGNUM))
+   (clobber (reg:SI A6_REGNUM))
+   (clobber (reg:SI A7_REGNUM))
+   (clobber (reg:SI T3_REGNUM))
+   (clobber (reg:SI T4_REGNUM))
+   (clobber (reg:SI T5_REGNUM))
+   (clobber (reg:SI T6_REGNUM))
+   (return)]
   "TARGET_XTHEAD_IPUSH"
   "th.ipop")
 
@@ -994,7 +1015,7 @@
    (set (match_operand:SI                    3 "register_operand" "=r")
 	(<any_divmod_mod>:SI (match_dup 1)
 			   (match_dup 2)))]
-  "TARGET_DIV && riscv_microarchitecture == c908"
+  "TARGET_DIV && RISCV_TUNE_C908_P"
   { return TARGET_64BIT ?
     "div<any_divmod_u>w\t%0,%1,%2\n\t" "rem<any_divmod_u>w\t%3,%1,%2"
     : "div<any_divmod_u>\t%0,%1,%2\n\t" "rem<any_divmod_u>\t%3,%1,%2"; }
@@ -1009,7 +1030,7 @@
    (set (match_operand:DI                    3 "register_operand" "=r")
 	(<any_divmod_mod>:DI (match_dup 1)
 			   (match_dup 2)))]
-  "TARGET_DIV && TARGET_64BIT && riscv_microarchitecture == c908"
+  "TARGET_DIV && TARGET_64BIT && RISCV_TUNE_C908_P"
   { return "div<any_divmod_u>\t%0,%1,%2\n\t" "rem<any_divmod_u>\t%3,%1,%2"; }
   [(set_attr "length" "8")
    (set_attr "type" "idivmod")
@@ -1024,7 +1045,7 @@
 	(<any_divmod_extend>:DI
 	    (<any_divmod_mod>:SI (match_dup 1)
 				 (match_dup 2))))]
-  "TARGET_DIV && TARGET_64BIT && riscv_microarchitecture == c908"
+  "TARGET_DIV && TARGET_64BIT && RISCV_TUNE_C908_P"
   { return "div<any_divmod_u>w\t%0,%1,%2\n\t" "rem<any_divmod_u>w\t%3,%1,%2"; }
   [(set_attr "length" "8")
    (set_attr "type" "idivmod")
@@ -1038,7 +1059,7 @@
    (set (match_operand:SI                        3 "register_operand" "=r")
 	(<any_divmod_mod>:SI (match_dup 1)
 			     (match_dup 2)))]
-  "TARGET_DIV && TARGET_64BIT && riscv_microarchitecture == c908"
+  "TARGET_DIV && TARGET_64BIT && RISCV_TUNE_C908_P"
   { return "div<any_divmod_u>w\t%0,%1,%2\n\t" "rem<any_divmod_u>w\t%3,%1,%2"; }
   [(set_attr "length" "8")
    (set_attr "type" "idivmod")
@@ -1052,7 +1073,7 @@
 	(<any_divmod_extend>:DI
 	    (<any_divmod_mod>:SI (match_dup 1)
 				 (match_dup 2))))]
-  "TARGET_DIV && TARGET_64BIT && riscv_microarchitecture == c908"
+  "TARGET_DIV && TARGET_64BIT && RISCV_TUNE_C908_P"
   { return "div<any_divmod_u>w\t%0,%1,%2\n\t" "rem<any_divmod_u>w\t%3,%1,%2"; }
   [(set_attr "length" "8")
    (set_attr "type" "idivmod")
@@ -1066,7 +1087,7 @@
 	(match_operand:DI 1 "riscv_mem_classic_operand" ""))
    (set (match_operand:DI 2 "register_operand" "")
 	(match_operand:DI 3 "riscv_mem_classic_operand" ""))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && REGNO (operands[0]) != REGNO (operands[2])
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (DImode)))
@@ -1082,7 +1103,7 @@
 	(sign_extend:DI (match_operand:SI 1 "riscv_mem_classic_operand" "")))
    (set (match_operand:DI 2 "register_operand" "")
 	(sign_extend:DI (match_operand:SI 3 "riscv_mem_classic_operand" "")))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && REGNO (operands[0]) != REGNO (operands[2])
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
@@ -1098,7 +1119,7 @@
 	(zero_extend:DI (match_operand:SI 1 "riscv_mem_classic_operand" "")))
    (set (match_operand:DI 2 "register_operand" "")
 	(zero_extend:DI (match_operand:SI 3 "riscv_mem_classic_operand" "")))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && REGNO (operands[0]) != REGNO (operands[2])
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
@@ -1114,7 +1135,7 @@
 	(match_operand:SI 1 "riscv_mem_classic_operand" ""))
    (set (match_operand:SI 2 "register_operand" "")
 	(match_operand:SI 3 "riscv_mem_classic_operand" ""))]
-  "riscv_microarchitecture == c908
+  "RISCV_TUNE_C908_P
    && REGNO (operands[0]) != REGNO (operands[2])
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
@@ -1130,7 +1151,7 @@
 	(match_operand:DI 1 "register_operand" ""))
    (set (match_operand:DI 2 "riscv_mem_classic_operand" "")
 	(match_operand:DI 3 "register_operand" ""))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && REGNO (operands[1]) != REGNO (operands[3])
    && rtx_equal_p (XEXP (operands[2], 0),
 	plus_constant (Pmode, XEXP (operands[0], 0), GET_MODE_SIZE (DImode)))
@@ -1146,7 +1167,7 @@
 	(match_operand:SI 1 "register_operand" ""))
    (set (match_operand:SI 2 "riscv_mem_classic_operand" "")
 	(match_operand:SI 3 "register_operand" ""))]
-  "riscv_microarchitecture == c908
+  "RISCV_TUNE_C908_P
    && REGNO (operands[1]) != REGNO (operands[3])
    && rtx_equal_p (XEXP (operands[2], 0),
 	plus_constant (Pmode, XEXP (operands[0], 0), GET_MODE_SIZE (SImode)))
@@ -1164,7 +1185,7 @@
 	(match_operand:DI 1 "riscv_mem_classic_operand"  "m"))
    (set (match_operand:DI 2 "register_operand"           "=r")
 	(match_operand:DI 3 "riscv_mem_classic_operand"  "m"))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (DImode)))
    && GET_CODE (XEXP (operands[3], 0)) == PLUS
@@ -1181,7 +1202,7 @@
 	(sign_extend:DI (match_operand:SI 1 "riscv_mem_classic_operand"  "m")))
    (set (match_operand:DI                 2 "register_operand"           "=r")
 	(sign_extend:DI (match_operand:SI 3 "riscv_mem_classic_operand"  "m")))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
    && GET_CODE (XEXP (operands[3], 0)) == PLUS
@@ -1197,7 +1218,7 @@
 	(match_operand:SI 1 "riscv_mem_classic_operand"  "m"))
    (set (match_operand:SI 2 "register_operand"           "=r")
 	(match_operand:SI 3 "riscv_mem_classic_operand"  "m"))]
-  "riscv_microarchitecture == c908
+  "RISCV_TUNE_C908_P
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
    && REGNO (operands[0]) != REGNO (XEXP (XEXP (operands[3], 0), 0))
@@ -1213,7 +1234,7 @@
 	(zero_extend:DI (match_operand:SI 1 "riscv_mem_classic_operand"  "m")))
    (set (match_operand:DI                 2 "register_operand"           "=r")
 	(zero_extend:DI (match_operand:SI 3 "riscv_mem_classic_operand"  "m")))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && rtx_equal_p (XEXP (operands[3], 0),
 	plus_constant (Pmode, XEXP (operands[1], 0), GET_MODE_SIZE (SImode)))
    && GET_CODE (XEXP (operands[3], 0)) == PLUS
@@ -1230,7 +1251,7 @@
 	(match_operand:DI 1 "register_operand"           "r"))
    (set (match_operand:DI 2 "riscv_mem_classic_operand"  "=m")
 	(match_operand:DI 3 "register_operand"           "r"))]
-  "TARGET_64BIT && riscv_microarchitecture == c908
+  "TARGET_64BIT && RISCV_TUNE_C908_P
    && rtx_equal_p (XEXP (operands[2], 0),
 	plus_constant (Pmode, XEXP (operands[0], 0), GET_MODE_SIZE (DImode)))
    && GET_CODE (XEXP (operands[2], 0)) == PLUS
@@ -1247,7 +1268,7 @@
 	(match_operand:SI 1 "register_operand"           "r"))
    (set (match_operand:SI 2 "riscv_mem_classic_operand"  "=m")
 	(match_operand:SI 3 "register_operand"           "r"))]
-  "riscv_microarchitecture == c908
+  "RISCV_TUNE_C908_P
    && rtx_equal_p (XEXP (operands[2], 0),
 	plus_constant (Pmode, XEXP (operands[0], 0), GET_MODE_SIZE (SImode)))
    && GET_CODE (XEXP (operands[2], 0)) == PLUS
@@ -1262,25 +1283,25 @@
 ;; ====
 
 (define_insn "*movsf_hardfloat"
-  [(set (match_operand:SF 0 "nonimmediate_operand" "=f,f,f,m,Qmx,*f,*r,  *r,*r,*Qmx")
-	(match_operand:SF 1 "move_operand"         " f,G,m,f,G,*r,*f,*G*r,*Qmx,*r"))]
+  [(set (match_operand:SF 0 "nonimmediate_operand" "=f,f,f,f,m,Qmx,*f,*r,  *r,*r,*Qmx")
+	(match_operand:SF 1 "move_operand"         " f,Zf,G,m,f,G,*r,*f,*G*r,*Qmx,*r"))]
   "!TARGET_64BIT
    && TARGET_XTHEAD_FLDR
    && (register_operand (operands[0], SFmode)
        || reg_or_0_operand (operands[1], SFmode))"
   { return riscv_output_move (operands[0], operands[1]); }
-  [(set_attr "move_type" "fmove,mtc,fpload,fpstore,store,mtc,mfc,move,load,store")
+  [(set_attr "move_type" "fmove,fmove,mtc,fpload,fpstore,store,mtc,mfc,move,load,store")
    (set_attr "mode" "SF")])
 
 (define_insn "*movdf_hardfloat_rv32"
-  [(set (match_operand:DF 0 "nonimmediate_operand" "=f,f,f,m,Qmx,*Qrf,*Qrx,  *r,*r,*Qmx")
-	(match_operand:DF 1 "move_operand"         " f,G,m,f,G,*Qrx,*Qrf,*r*G,*Qmx,*r"))]
+  [(set (match_operand:DF 0 "nonimmediate_operand" "=f,f,f,f,m,Qmx,*Qrf,*Qrx,  *r,*r,*Qmx")
+	(match_operand:DF 1 "move_operand"         " f,Zf,G,m,f,G,*Qrx,*Qrf,*r*G,*Qmx,*r"))]
   "!TARGET_64BIT && TARGET_DOUBLE_FLOAT
    && TARGET_XTHEAD_FLDR
    && (register_operand (operands[0], DFmode)
        || reg_or_0_operand (operands[1], DFmode))"
   { return riscv_output_move (operands[0], operands[1]); }
-  [(set_attr "move_type" "fmove,mtc,fpload,fpstore,store,mtc,mfc,move,load,store")
+  [(set_attr "move_type" "fmove,fmove,mtc,fpload,fpstore,store,mtc,mfc,move,load,store")
    (set_attr "mode" "DF")])
 
 (include "c906v.md")

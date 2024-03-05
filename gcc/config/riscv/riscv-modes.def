@@ -25,6 +25,9 @@ FLOAT_MODE (TF, 16, ieee_quad_format);
 FLOAT_MODE (HF, 2, 0);
 ADJUST_FLOAT_FORMAT (HF, &ieee_half_format);
 
+FLOAT_MODE (BF, 2, 0);
+ADJUST_FLOAT_FORMAT (BF, &arm_bfloat_half_format);
+
 /* DSP modes.  */
 VECTOR_MODES (INT, 4);
 VECTOR_MODES (INT, 8);
@@ -46,6 +49,7 @@ VECTOR_MODES (INT, 16);
   ADJUST_NUNITS (VS##SI, riscv_rvv_chunks * NVECS * 2); \
   ADJUST_NUNITS (VD##DI, riscv_rvv_chunks * NVECS); \
   ADJUST_NUNITS (VH##HF, riscv_rvv_chunks * NVECS * 4); \
+  ADJUST_NUNITS (VH##BF, riscv_rvv_chunks * NVECS * 4); \
   ADJUST_NUNITS (VS##SF, riscv_rvv_chunks * NVECS * 2); \
   ADJUST_NUNITS (VD##DF, riscv_rvv_chunks * NVECS); \
   \
@@ -54,6 +58,7 @@ VECTOR_MODES (INT, 16);
   ADJUST_ALIGNMENT (VS##SI, 4); \
   ADJUST_ALIGNMENT (VD##DI, 8); \
   ADJUST_ALIGNMENT (VH##HF, 2); \
+  ADJUST_ALIGNMENT (VH##BF, 2); \
   ADJUST_ALIGNMENT (VS##SF, 4); \
   ADJUST_ALIGNMENT (VD##DF, 8);
 
@@ -65,12 +70,14 @@ VECTOR_MODES (INT, 16);
   ADJUST_NUNITS (VH##HI, riscv_rvv_chunks * 4); \
   ADJUST_NUNITS (VS##SI, riscv_rvv_chunks * 2); \
   ADJUST_NUNITS (VH##HF, riscv_rvv_chunks * 4); \
+  ADJUST_NUNITS (VH##BF, riscv_rvv_chunks * 4); \
   ADJUST_NUNITS (VS##SF, riscv_rvv_chunks * 2); \
   \
   ADJUST_ALIGNMENT (VB##QI, 1); \
   ADJUST_ALIGNMENT (VH##HI, 2); \
   ADJUST_ALIGNMENT (VS##SI, 4); \
   ADJUST_ALIGNMENT (VH##HF, 2); \
+  ADJUST_ALIGNMENT (VH##BF, 2); \
   ADJUST_ALIGNMENT (VS##SF, 4);
 
 #define RVV_FRACTIONAL_VBH(NVECS, VB, VH) \
@@ -80,10 +87,12 @@ VECTOR_MODES (INT, 16);
   ADJUST_NUNITS (VB##QI, riscv_rvv_chunks * 8); \
   ADJUST_NUNITS (VH##HI, riscv_rvv_chunks * 4); \
   ADJUST_NUNITS (VH##HF, riscv_rvv_chunks * 4); \
+  ADJUST_NUNITS (VH##BF, riscv_rvv_chunks * 4); \
   \
   ADJUST_ALIGNMENT (VB##QI, 1); \
   ADJUST_ALIGNMENT (VH##HI, 2); \
-  ADJUST_ALIGNMENT (VH##HF, 2);
+  ADJUST_ALIGNMENT (VH##HF, 2); \
+  ADJUST_ALIGNMENT (VH##BF, 2);
 
 #define RVV_FRACTIONAL_VB(NVECS, VB) \
   VECTOR_MODES_WITH_PREFIX (VNx, INT, 16 / NVECS, 0); \
@@ -161,6 +170,35 @@ RVV_MASK_MODES(32)
 RVV_MASK_MODES(64)
 RVV_MASK_MODES(128)
 
+#define RVM_MODES(VB, VH, VS, VD) \
+  VECTOR_MODES_WITH_PREFIX (M, INT, 64, 0); \
+  VECTOR_MODES_WITH_PREFIX (M, FLOAT, 64, 0); \
+  VECTOR_MODES_WITH_PREFIX (M2x, FLOAT, 64, 0); \
+  \
+  ADJUST_NUNITS (M##VB##QI, riscv_rvm_chunks * 8); \
+  ADJUST_NUNITS (M##VH##HI, riscv_rvm_chunks * 4); \
+  ADJUST_NUNITS (M##VS##SI, riscv_rvm_chunks * 2); \
+  ADJUST_NUNITS (M##VD##DI, riscv_rvm_chunks * 1); \
+  ADJUST_NUNITS (M##VH##HF, riscv_rvm_chunks * 4); \
+  ADJUST_NUNITS (M##VS##SF, riscv_rvm_chunks * 2); \
+  ADJUST_NUNITS (M##VD##DF, riscv_rvm_chunks * 1); \
+  ADJUST_NUNITS (M2x##VH##HF, riscv_rvm_chunks * 4 * 2); \
+  ADJUST_NUNITS (M2x##VS##SF, riscv_rvm_chunks * 2 * 2); \
+  ADJUST_NUNITS (M2x##VD##DF, riscv_rvm_chunks * 1 * 2); \
+  \
+  ADJUST_ALIGNMENT (M##VB##QI, 1); \
+  ADJUST_ALIGNMENT (M##VH##HI, 2); \
+  ADJUST_ALIGNMENT (M##VS##SI, 4); \
+  ADJUST_ALIGNMENT (M##VD##DI, 8); \
+  ADJUST_ALIGNMENT (M##VH##HF, 2); \
+  ADJUST_ALIGNMENT (M##VS##SF, 4); \
+  ADJUST_ALIGNMENT (M##VD##DF, 8); \
+  ADJUST_ALIGNMENT (M2x##VH##HF, 2); \
+  ADJUST_ALIGNMENT (M2x##VS##SF, 4); \
+  ADJUST_ALIGNMENT (M2x##VD##DF, 8);
+
+RVM_MODES (64, 32, 16, 8)
+
 /* A 8-tuple of RVV vectors with the maximum -mrvv-vector-bits= setting.
    Note that this is a limit only on the compile-time sizes of modes;
    it is not a limit on the runtime sizes, since VL-agnostic code
@@ -169,4 +207,4 @@ RVV_MASK_MODES(128)
 
 /* Coefficient 1 is multiplied by the number of 64-bit chunks in a vector
    minus one.  */
-#define NUM_POLY_INT_COEFFS 2
+#define NUM_POLY_INT_COEFFS 3

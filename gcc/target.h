@@ -264,6 +264,8 @@ enum type_context_kind {
   TCTX_CAPTURE_BY_COPY
 };
 
+typedef void (*emit_support_tinfos_callback) (tree);
+
 extern bool verify_type_context (location_t, type_context_kind, const_tree,
 				 bool = false);
 

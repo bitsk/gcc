@@ -27,6 +27,19 @@ load_lib g++-dg.exp
 # Initialize `dg'.
 dg-init
 
+if { [istarget riscv*musl*] } {
+    # Main loop.
+    if { [istarget riscv32*musl*] } {
+      dg-runtest [lsort [glob -nocomplain $srcdir/$subdir/*rv32.C]] "" ""
+    } else {
+      dg-runtest [lsort [lsearch -all -inline -not [glob -nocomplain $srcdir/$subdir/*.C] {*rv32.C}]] "" ""
+    }
+
+    # All done.
+    dg-finish
+    return
+}
+
 # Main loop.
 dg-runtest [lsort [glob -nocomplain $srcdir/$subdir/*.C]] "" ""
 

@@ -161,4 +161,22 @@
 (define_constraint "vp"
   "POLY_INT"
   (and (match_code "const_poly_int")
-       (match_test "CONST_POLY_INT_COEFFS (op)[0] == UNITS_PER_V_REG.coeffs[0]")))
+       (match_test "known_eq (rtx_to_poly_int64 (op), UNITS_PER_V_REG)")))
+
+(define_constraint "C"
+  "A 12-bit unsigned immediate for CSR address."
+  (and (match_code "const_int")
+       (match_test "IN_RANGE (ival, 0, IMM_REACH-1)")))
+
+;; Matrix constraints.
+
+(define_register_constraint "xr" "TARGET_MATRIX ? MATRIX_REGS : NO_REGS"
+  "A matrix register (if available).")
+
+(define_register_constraint "xi" "TARGET_MATRIX ? MATRIX_GR_REGS : NO_REGS"
+  "A matrix general register (x8 - x15) (if available).")
+
+(define_constraint "xp"
+  "POLY_INT"
+  (and (match_code "const_poly_int")
+       (match_test "known_eq (rtx_to_poly_int64 (op), UNITS_PER_M_REG)")))

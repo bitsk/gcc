@@ -1,7 +1,6 @@
 
 /* { dg-do assemble } */
-/* { dg-skip-if "test P-ext insns" { *-*-* } { "*" } { "-march=rv*p*" } } */
-/* { dg-options "-O3 --save-temps" } */
+/* { dg-options "-march=rv64gcp -mabi=lp64d -O3 --save-temps" } */
 
 #if (__riscv_xlen==64)
 #define N 8
@@ -16,7 +15,7 @@ unsigned char ua[N];
 unsigned char ub[N];
 unsigned char uc[N];
 
-int func()
+void func()
 {
   int i;
   for (i=0;i<N;i++)
@@ -25,7 +24,7 @@ int func()
 
 /* { dg-final { scan-assembler "smax8\t" } }*/
 
-int ufunc()
+void ufunc()
 {
   int i;
   for (i=0;i<N;i++)

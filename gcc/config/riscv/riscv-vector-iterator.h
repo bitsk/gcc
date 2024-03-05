@@ -183,19 +183,15 @@
   MACRO (8, f8, 64, vnx2qi, QI, 8, f8, vnx2qi, QI) \
   MACRO (8, f8, 64, vnx2qi, QI, 16, f4, vnx2hi, HI) \
   MACRO (8, f8, 64, vnx2qi, QI, 32, f2, vnx2si, SI) \
-  MACRO (8, f8, 64, vnx2qi, QI, 64, 1, vnx2di, DI) \
   MACRO (8, f4, 32, vnx4qi, QI, 8, f4, vnx4qi, QI) \
   MACRO (8, f4, 32, vnx4qi, QI, 16, f2, vnx4hi, HI) \
   MACRO (8, f4, 32, vnx4qi, QI, 32, 1, vnx4si, SI) \
-  MACRO (8, f4, 32, vnx4qi, QI, 64, 2, vnx4di, DI) \
   MACRO (8, f2, 16, vnx8qi, QI, 8, f2, vnx8qi, QI) \
   MACRO (8, f2, 16, vnx8qi, QI, 16, 1, vnx8hi, HI) \
   MACRO (8, f2, 16, vnx8qi, QI, 32, 2, vnx8si, SI) \
-  MACRO (8, f2, 16, vnx8qi, QI, 64, 4, vnx8di, DI) \
   MACRO (8, 1, 8, vnx16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 8, vnx16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 8, vnx16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 8, vnx16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 2, 4, vnx32qi, QI, 8, 2, vnx32qi, QI) \
   MACRO (8, 2, 4, vnx32qi, QI, 16, 4, vnx32hi, HI) \
   MACRO (8, 2, 4, vnx32qi, QI, 32, 8, vnx32si, SI) \
@@ -205,19 +201,15 @@
   MACRO (16, f4, 64, vnx2hi, HI, 8, f8, vnx2qi, QI) \
   MACRO (16, f4, 64, vnx2hi, HI, 16, f4, vnx2hi, HI) \
   MACRO (16, f4, 64, vnx2hi, HI, 32, f2, vnx2si, SI) \
-  MACRO (16, f4, 64, vnx2hi, HI, 64, 1, vnx2di, DI) \
   MACRO (16, f2, 32, vnx4hi, HI, 8, f4, vnx4qi, QI) \
   MACRO (16, f2, 32, vnx4hi, HI, 16, f2, vnx4hi, HI) \
   MACRO (16, f2, 32, vnx4hi, HI, 32, 1, vnx4si, SI) \
-  MACRO (16, f2, 32, vnx4hi, HI, 64, 2, vnx4di, DI) \
   MACRO (16, 1, 16, vnx8hi, HI, 8, f2, vnx8qi, QI) \
   MACRO (16, 1, 16, vnx8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 16, vnx8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 16, vnx8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 2, 8, vnx16hi, HI, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 8, vnx16hi, HI, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 8, vnx16hi, HI, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 8, vnx16hi, HI, 64, 8, vnx16di, DI) \
   MACRO (16, 4, 4, vnx32hi, HI, 8, 2, vnx32qi, QI) \
   MACRO (16, 4, 4, vnx32hi, HI, 16, 4, vnx32hi, HI) \
   MACRO (16, 4, 4, vnx32hi, HI, 32, 8, vnx32si, SI) \
@@ -226,37 +218,47 @@
   MACRO (32, f2, 64, vnx2si, SI, 8, f8, vnx2qi, QI) \
   MACRO (32, f2, 64, vnx2si, SI, 16, f4, vnx2hi, HI) \
   MACRO (32, f2, 64, vnx2si, SI, 32, f2, vnx2si, SI) \
-  MACRO (32, f2, 64, vnx2si, SI, 64, 1, vnx2di, DI) \
   MACRO (32, 1, 32, vnx4si, SI, 8, f4, vnx4qi, QI) \
   MACRO (32, 1, 32, vnx4si, SI, 16, f2, vnx4hi, HI) \
   MACRO (32, 1, 32, vnx4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 32, vnx4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 2, 16, vnx8si, SI, 8, f2, vnx8qi, QI) \
   MACRO (32, 2, 16, vnx8si, SI, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 16, vnx8si, SI, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 16, vnx8si, SI, 64, 4, vnx8di, DI) \
   MACRO (32, 4, 8, vnx16si, SI, 8, 1, vnx16qi, QI) \
   MACRO (32, 4, 8, vnx16si, SI, 16, 2, vnx16hi, HI) \
   MACRO (32, 4, 8, vnx16si, SI, 32, 4, vnx16si, SI) \
-  MACRO (32, 4, 8, vnx16si, SI, 64, 8, vnx16di, DI) \
   MACRO (32, 8, 4, vnx32si, SI, 8, 2, vnx32qi, QI) \
   MACRO (32, 8, 4, vnx32si, SI, 16, 4, vnx32hi, HI) \
   MACRO (32, 8, 4, vnx32si, SI, 32, 8, vnx32si, SI) \
   MACRO (64, 1, 64, vnx2di, DI, 8, f8, vnx2qi, QI) \
   MACRO (64, 1, 64, vnx2di, DI, 16, f4, vnx2hi, HI) \
   MACRO (64, 1, 64, vnx2di, DI, 32, f2, vnx2si, SI) \
-  MACRO (64, 1, 64, vnx2di, DI, 64, 1, vnx2di, DI) \
   MACRO (64, 2, 32, vnx4di, DI, 8, f4, vnx4qi, QI) \
   MACRO (64, 2, 32, vnx4di, DI, 16, f2, vnx4hi, HI) \
   MACRO (64, 2, 32, vnx4di, DI, 32, 1, vnx4si, SI) \
-  MACRO (64, 2, 32, vnx4di, DI, 64, 2, vnx4di, DI) \
   MACRO (64, 4, 16, vnx8di, DI, 8, f2, vnx8qi, QI) \
   MACRO (64, 4, 16, vnx8di, DI, 16, 1, vnx8hi, HI) \
   MACRO (64, 4, 16, vnx8di, DI, 32, 2, vnx8si, SI) \
-  MACRO (64, 4, 16, vnx8di, DI, 64, 4, vnx8di, DI) \
   MACRO (64, 8, 8, vnx16di, DI, 8, 1, vnx16qi, QI) \
   MACRO (64, 8, 8, vnx16di, DI, 16, 2, vnx16hi, HI) \
-  MACRO (64, 8, 8, vnx16di, DI, 32, 4, vnx16si, SI) \
+  MACRO (64, 8, 8, vnx16di, DI, 32, 4, vnx16si, SI)
+
+#define _RVV_INT_INDEX_64_ITERATOR(MACRO) \
+  MACRO (8, f8, 64, vnx2qi, QI, 64, 1, vnx2di, DI) \
+  MACRO (8, f4, 32, vnx4qi, QI, 64, 2, vnx4di, DI) \
+  MACRO (8, f2, 16, vnx8qi, QI, 64, 4, vnx8di, DI) \
+  MACRO (8, 1, 8, vnx16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (16, f4, 64, vnx2hi, HI, 64, 1, vnx2di, DI) \
+  MACRO (16, f2, 32, vnx4hi, HI, 64, 2, vnx4di, DI) \
+  MACRO (16, 1, 16, vnx8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 2, 8, vnx16hi, HI, 64, 8, vnx16di, DI) \
+  MACRO (32, f2, 64, vnx2si, SI, 64, 1, vnx2di, DI) \
+  MACRO (32, 1, 32, vnx4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 2, 16, vnx8si, SI, 64, 4, vnx8di, DI) \
+  MACRO (32, 4, 8, vnx16si, SI, 64, 8, vnx16di, DI) \
+  MACRO (64, 1, 64, vnx2di, DI, 64, 1, vnx2di, DI) \
+  MACRO (64, 2, 32, vnx4di, DI, 64, 2, vnx4di, DI) \
+  MACRO (64, 4, 16, vnx8di, DI, 64, 4, vnx8di, DI) \
   MACRO (64, 8, 8, vnx16di, DI, 64, 8, vnx16di, DI) \
 
 /* Same as above but with an extra argument.  */
@@ -870,19 +872,15 @@
   MACRO (16, f4, 64, vnx2hf, HF, 8, f8, vnx2qi, QI) \
   MACRO (16, f4, 64, vnx2hf, HF, 16, f4, vnx2hi, HI) \
   MACRO (16, f4, 64, vnx2hf, HF, 32, f2, vnx2si, SI) \
-  MACRO (16, f4, 64, vnx2hf, HF, 64, 1, vnx2di, DI) \
   MACRO (16, f2, 32, vnx4hf, HF, 8, f4, vnx4qi, QI) \
   MACRO (16, f2, 32, vnx4hf, HF, 16, f2, vnx4hi, HI) \
   MACRO (16, f2, 32, vnx4hf, HF, 32, 1, vnx4si, SI) \
-  MACRO (16, f2, 32, vnx4hf, HF, 64, 2, vnx4di, DI) \
   MACRO (16, 1, 16, vnx8hf, HF, 8, f2, vnx8qi, QI) \
   MACRO (16, 1, 16, vnx8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 16, vnx8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 16, vnx8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 2, 8, vnx16hf, HF, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 8, vnx16hf, HF, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 8, vnx16hf, HF, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 8, vnx16hf, HF, 64, 8, vnx16di, DI) \
   MACRO (16, 4, 4, vnx32hf, HF, 8, 2, vnx32qi, QI) \
   MACRO (16, 4, 4, vnx32hf, HF, 16, 4, vnx32hi, HI) \
   MACRO (16, 4, 4, vnx32hf, HF, 32, 8, vnx32si, SI) \
@@ -891,37 +889,43 @@
   MACRO (32, f2, 64, vnx2sf, SF, 8, f8, vnx2qi, QI) \
   MACRO (32, f2, 64, vnx2sf, SF, 16, f4, vnx2hi, HI) \
   MACRO (32, f2, 64, vnx2sf, SF, 32, f2, vnx2si, SI) \
-  MACRO (32, f2, 64, vnx2sf, SF, 64, 1, vnx2di, DI) \
   MACRO (32, 1, 32, vnx4sf, SF, 8, f4, vnx4qi, QI) \
   MACRO (32, 1, 32, vnx4sf, SF, 16, f2, vnx4hi, HI) \
   MACRO (32, 1, 32, vnx4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 32, vnx4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 2, 16, vnx8sf, SF, 8, f2, vnx8qi, QI) \
   MACRO (32, 2, 16, vnx8sf, SF, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 16, vnx8sf, SF, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 16, vnx8sf, SF, 64, 4, vnx8di, DI) \
   MACRO (32, 4, 8, vnx16sf, SF, 8, 1, vnx16qi, QI) \
   MACRO (32, 4, 8, vnx16sf, SF, 16, 2, vnx16hi, HI) \
   MACRO (32, 4, 8, vnx16sf, SF, 32, 4, vnx16si, SI) \
-  MACRO (32, 4, 8, vnx16sf, SF, 64, 8, vnx16di, DI) \
   MACRO (32, 8, 4, vnx32sf, SF, 8, 2, vnx32qi, QI) \
   MACRO (32, 8, 4, vnx32sf, SF, 16, 4, vnx32hi, HI) \
   MACRO (32, 8, 4, vnx32sf, SF, 32, 8, vnx32si, SI) \
   MACRO (64, 1, 64, vnx2df, DF, 8, f8, vnx2qi, QI) \
   MACRO (64, 1, 64, vnx2df, DF, 16, f4, vnx2hi, HI) \
   MACRO (64, 1, 64, vnx2df, DF, 32, f2, vnx2si, SI) \
-  MACRO (64, 1, 64, vnx2df, DF, 64, 1, vnx2di, DI) \
   MACRO (64, 2, 32, vnx4df, DF, 8, f4, vnx4qi, QI) \
   MACRO (64, 2, 32, vnx4df, DF, 16, f2, vnx4hi, HI) \
   MACRO (64, 2, 32, vnx4df, DF, 32, 1, vnx4si, SI) \
-  MACRO (64, 2, 32, vnx4df, DF, 64, 2, vnx4di, DI) \
   MACRO (64, 4, 16, vnx8df, DF, 8, f2, vnx8qi, QI) \
   MACRO (64, 4, 16, vnx8df, DF, 16, 1, vnx8hi, HI) \
   MACRO (64, 4, 16, vnx8df, DF, 32, 2, vnx8si, SI) \
-  MACRO (64, 4, 16, vnx8df, DF, 64, 4, vnx8di, DI) \
   MACRO (64, 8, 8, vnx16df, DF, 8, 1, vnx16qi, QI) \
   MACRO (64, 8, 8, vnx16df, DF, 16, 2, vnx16hi, HI) \
   MACRO (64, 8, 8, vnx16df, DF, 32, 4, vnx16si, SI) \
+
+#define _RVV_FLOAT_INDEX_64_ITERATOR(MACRO) \
+  MACRO (16, f4, 64, vnx2hf, HF, 64, 1, vnx2di, DI) \
+  MACRO (16, f2, 32, vnx4hf, HF, 64, 2, vnx4di, DI) \
+  MACRO (16, 1, 16, vnx8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 2, 8, vnx16hf, HF, 64, 8, vnx16di, DI) \
+  MACRO (32, f2, 64, vnx2sf, SF, 64, 1, vnx2di, DI) \
+  MACRO (32, 1, 32, vnx4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 2, 16, vnx8sf, SF, 64, 4, vnx8di, DI) \
+  MACRO (32, 4, 8, vnx16sf, SF, 64, 8, vnx16di, DI) \
+  MACRO (64, 1, 64, vnx2df, DF, 64, 1, vnx2di, DI) \
+  MACRO (64, 2, 32, vnx4df, DF, 64, 2, vnx4di, DI) \
+  MACRO (64, 4, 16, vnx8df, DF, 64, 4, vnx8di, DI) \
   MACRO (64, 8, 8, vnx16df, DF, 64, 8, vnx16di, DI) \
 
 /* Same as above but with an extra argument.  */
@@ -1270,31 +1274,24 @@
   MACRO (8, 1, 2, 8, vnx2x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 2, 8, vnx2x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 2, 8, vnx2x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 2, 8, vnx2x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 1, 3, 8, vnx3x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 3, 8, vnx3x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 3, 8, vnx3x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 3, 8, vnx3x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 1, 4, 8, vnx4x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 4, 8, vnx4x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 4, 8, vnx4x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 4, 8, vnx4x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 1, 5, 8, vnx5x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 5, 8, vnx5x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 5, 8, vnx5x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 5, 8, vnx5x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 1, 6, 8, vnx6x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 6, 8, vnx6x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 6, 8, vnx6x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 6, 8, vnx6x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 1, 7, 8, vnx7x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 7, 8, vnx7x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 7, 8, vnx7x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 7, 8, vnx7x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 1, 8, 8, vnx8x16qi, QI, 8, 1, vnx16qi, QI) \
   MACRO (8, 1, 8, 8, vnx8x16qi, QI, 16, 2, vnx16hi, HI) \
   MACRO (8, 1, 8, 8, vnx8x16qi, QI, 32, 4, vnx16si, SI) \
-  MACRO (8, 1, 8, 8, vnx8x16qi, QI, 64, 8, vnx16di, DI) \
   MACRO (8, 2, 2, 4, vnx2x32qi, QI, 8, 2, vnx32qi, QI) \
   MACRO (8, 2, 2, 4, vnx2x32qi, QI, 16, 4, vnx32hi, HI) \
   MACRO (8, 2, 2, 4, vnx2x32qi, QI, 32, 8, vnx32si, SI) \
@@ -1308,66 +1305,80 @@
   MACRO (8, 4, 2, 2, vnx2x64qi, QI, 16, 8, vnx64hi, HI) \
   MACRO (16, 1, 2, 16, vnx2x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 2, 16, vnx2x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 2, 16, vnx2x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 3, 16, vnx3x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 3, 16, vnx3x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 3, 16, vnx3x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 4, 16, vnx4x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 4, 16, vnx4x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 4, 16, vnx4x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 5, 16, vnx5x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 5, 16, vnx5x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 5, 16, vnx5x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 6, 16, vnx6x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 6, 16, vnx6x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 6, 16, vnx6x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 7, 16, vnx7x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 7, 16, vnx7x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 7, 16, vnx7x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 8, 16, vnx8x8hi, HI, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 8, 16, vnx8x8hi, HI, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 8, 16, vnx8x8hi, HI, 64, 4, vnx8di, DI) \
   MACRO (16, 2, 2, 8, vnx2x16hi, HI, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 2, 8, vnx2x16hi, HI, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 2, 8, vnx2x16hi, HI, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 2, 8, vnx2x16hi, HI, 64, 8, vnx16di, DI) \
   MACRO (16, 2, 3, 8, vnx3x16hi, HI, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 3, 8, vnx3x16hi, HI, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 3, 8, vnx3x16hi, HI, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 3, 8, vnx3x16hi, HI, 64, 8, vnx16di, DI) \
   MACRO (16, 2, 4, 8, vnx4x16hi, HI, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 4, 8, vnx4x16hi, HI, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 4, 8, vnx4x16hi, HI, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 4, 8, vnx4x16hi, HI, 64, 8, vnx16di, DI) \
   MACRO (16, 4, 2, 4, vnx2x32hi, HI, 8, 2, vnx32qi, QI) \
   MACRO (16, 4, 2, 4, vnx2x32hi, HI, 16, 4, vnx32hi, HI) \
   MACRO (16, 4, 2, 4, vnx2x32hi, HI, 32, 8, vnx32si, SI) \
   MACRO (32, 1, 2, 32, vnx2x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 2, 32, vnx2x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 3, 32, vnx3x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 3, 32, vnx3x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 4, 32, vnx4x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 4, 32, vnx4x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 5, 32, vnx5x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 5, 32, vnx5x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 6, 32, vnx6x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 6, 32, vnx6x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 7, 32, vnx7x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 7, 32, vnx7x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 8, 32, vnx8x4si, SI, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 8, 32, vnx8x4si, SI, 64, 2, vnx4di, DI) \
   MACRO (32, 2, 2, 16, vnx2x8si, SI, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 2, 16, vnx2x8si, SI, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 2, 16, vnx2x8si, SI, 64, 4, vnx8di, DI) \
   MACRO (32, 2, 3, 16, vnx3x8si, SI, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 3, 16, vnx3x8si, SI, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 3, 16, vnx3x8si, SI, 64, 4, vnx8di, DI) \
   MACRO (32, 2, 4, 16, vnx4x8si, SI, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 4, 16, vnx4x8si, SI, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 4, 16, vnx4x8si, SI, 64, 4, vnx8di, DI) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 8, 1, vnx16qi, QI) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 16, 2, vnx16hi, HI) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 32, 4, vnx16si, SI) \
+  MACRO (64, 2, 2, 32, vnx2x4di, DI, 32, 1, vnx4si, SI) \
+  MACRO (64, 2, 3, 32, vnx3x4di, DI, 32, 1, vnx4si, SI) \
+  MACRO (64, 2, 4, 32, vnx4x4di, DI, 32, 1, vnx4si, SI) \
+  MACRO (64, 4, 2, 16, vnx2x8di, DI, 16, 1, vnx8hi, HI) \
+  MACRO (64, 4, 2, 16, vnx2x8di, DI, 32, 2, vnx8si, SI) \
+
+#define _RVV_SEG_INT_INDEX_64_ITERATOR(MACRO) \
+  MACRO (8, 1, 2, 8, vnx2x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (8, 1, 3, 8, vnx3x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (8, 1, 4, 8, vnx4x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (8, 1, 5, 8, vnx5x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (8, 1, 6, 8, vnx6x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (8, 1, 7, 8, vnx7x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (8, 1, 8, 8, vnx8x16qi, QI, 64, 8, vnx16di, DI) \
+  MACRO (16, 1, 2, 16, vnx2x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 3, 16, vnx3x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 4, 16, vnx4x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 5, 16, vnx5x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 6, 16, vnx6x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 7, 16, vnx7x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 8, 16, vnx8x8hi, HI, 64, 4, vnx8di, DI) \
+  MACRO (16, 2, 2, 8, vnx2x16hi, HI, 64, 8, vnx16di, DI) \
+  MACRO (16, 2, 3, 8, vnx3x16hi, HI, 64, 8, vnx16di, DI) \
+  MACRO (16, 2, 4, 8, vnx4x16hi, HI, 64, 8, vnx16di, DI) \
+  MACRO (32, 1, 2, 32, vnx2x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 3, 32, vnx3x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 4, 32, vnx4x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 5, 32, vnx5x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 6, 32, vnx6x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 7, 32, vnx7x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 8, 32, vnx8x4si, SI, 64, 2, vnx4di, DI) \
+  MACRO (32, 2, 2, 16, vnx2x8si, SI, 64, 4, vnx8di, DI) \
+  MACRO (32, 2, 3, 16, vnx3x8si, SI, 64, 4, vnx8di, DI) \
+  MACRO (32, 2, 4, 16, vnx4x8si, SI, 64, 4, vnx8di, DI) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 64, 8, vnx16di, DI) \
   MACRO (64, 1, 2, 64, vnx2x2di, DI, 64, 1, vnx2di, DI) \
   MACRO (64, 1, 3, 64, vnx3x2di, DI, 64, 1, vnx2di, DI) \
@@ -1376,14 +1387,9 @@
   MACRO (64, 1, 6, 64, vnx6x2di, DI, 64, 1, vnx2di, DI) \
   MACRO (64, 1, 7, 64, vnx7x2di, DI, 64, 1, vnx2di, DI) \
   MACRO (64, 1, 8, 64, vnx8x2di, DI, 64, 1, vnx2di, DI) \
-  MACRO (64, 2, 2, 32, vnx2x4di, DI, 32, 1, vnx4si, SI) \
   MACRO (64, 2, 2, 32, vnx2x4di, DI, 64, 2, vnx4di, DI) \
-  MACRO (64, 2, 3, 32, vnx3x4di, DI, 32, 1, vnx4si, SI) \
   MACRO (64, 2, 3, 32, vnx3x4di, DI, 64, 2, vnx4di, DI) \
-  MACRO (64, 2, 4, 32, vnx4x4di, DI, 32, 1, vnx4si, SI) \
   MACRO (64, 2, 4, 32, vnx4x4di, DI, 64, 2, vnx4di, DI) \
-  MACRO (64, 4, 2, 16, vnx2x8di, DI, 16, 1, vnx8hi, HI) \
-  MACRO (64, 4, 2, 16, vnx2x8di, DI, 32, 2, vnx8si, SI) \
   MACRO (64, 4, 2, 16, vnx2x8di, DI, 64, 4, vnx8di, DI) \
 
 /* Same as above but with an extra argument.  */
@@ -1391,31 +1397,24 @@
   MACRO (8, 1, 2, 8, vnx2x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 2, 8, vnx2x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 2, 8, vnx2x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 2, 8, vnx2x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 1, 3, 8, vnx3x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 3, 8, vnx3x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 3, 8, vnx3x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 3, 8, vnx3x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 1, 4, 8, vnx4x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 4, 8, vnx4x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 4, 8, vnx4x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 4, 8, vnx4x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 1, 5, 8, vnx5x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 5, 8, vnx5x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 5, 8, vnx5x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 5, 8, vnx5x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 1, 6, 8, vnx6x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 6, 8, vnx6x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 6, 8, vnx6x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 6, 8, vnx6x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 1, 7, 8, vnx7x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 7, 8, vnx7x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 7, 8, vnx7x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 7, 8, vnx7x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 1, 8, 8, vnx8x16qi, QI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (8, 1, 8, 8, vnx8x16qi, QI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (8, 1, 8, 8, vnx8x16qi, QI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (8, 1, 8, 8, vnx8x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (8, 2, 2, 4, vnx2x32qi, QI, 8, 2, vnx32qi, QI, __VA_ARGS__) \
   MACRO (8, 2, 2, 4, vnx2x32qi, QI, 16, 4, vnx32hi, HI, __VA_ARGS__) \
   MACRO (8, 2, 2, 4, vnx2x32qi, QI, 32, 8, vnx32si, SI, __VA_ARGS__) \
@@ -1429,66 +1428,80 @@
   MACRO (8, 4, 2, 2, vnx2x64qi, QI, 16, 8, vnx64hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 2, 16, vnx2x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 2, 16, vnx2x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 2, 16, vnx2x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 3, 16, vnx3x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 3, 16, vnx3x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 3, 16, vnx3x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 4, 16, vnx4x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 4, 16, vnx4x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 4, 16, vnx4x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 5, 16, vnx5x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 5, 16, vnx5x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 5, 16, vnx5x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 6, 16, vnx6x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 6, 16, vnx6x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 6, 16, vnx6x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 7, 16, vnx7x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 7, 16, vnx7x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 7, 16, vnx7x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 8, 16, vnx8x8hi, HI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 8, 16, vnx8x8hi, HI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 8, 16, vnx8x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 2, 2, 8, vnx2x16hi, HI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (16, 2, 2, 8, vnx2x16hi, HI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (16, 2, 2, 8, vnx2x16hi, HI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (16, 2, 2, 8, vnx2x16hi, HI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (16, 2, 3, 8, vnx3x16hi, HI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (16, 2, 3, 8, vnx3x16hi, HI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (16, 2, 3, 8, vnx3x16hi, HI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (16, 2, 3, 8, vnx3x16hi, HI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (16, 2, 4, 8, vnx4x16hi, HI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (16, 2, 4, 8, vnx4x16hi, HI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (16, 2, 4, 8, vnx4x16hi, HI, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (16, 2, 4, 8, vnx4x16hi, HI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (16, 4, 2, 4, vnx2x32hi, HI, 8, 2, vnx32qi, QI, __VA_ARGS__) \
   MACRO (16, 4, 2, 4, vnx2x32hi, HI, 16, 4, vnx32hi, HI, __VA_ARGS__) \
   MACRO (16, 4, 2, 4, vnx2x32hi, HI, 32, 8, vnx32si, SI, __VA_ARGS__) \
   MACRO (32, 1, 2, 32, vnx2x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 2, 32, vnx2x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 3, 32, vnx3x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 3, 32, vnx3x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 4, 32, vnx4x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 4, 32, vnx4x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 5, 32, vnx5x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 5, 32, vnx5x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 6, 32, vnx6x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 6, 32, vnx6x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 7, 32, vnx7x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 7, 32, vnx7x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 8, 32, vnx8x4si, SI, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 8, 32, vnx8x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 2, 2, 16, vnx2x8si, SI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (32, 2, 2, 16, vnx2x8si, SI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (32, 2, 2, 16, vnx2x8si, SI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 2, 3, 16, vnx3x8si, SI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (32, 2, 3, 16, vnx3x8si, SI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (32, 2, 3, 16, vnx3x8si, SI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 2, 4, 16, vnx4x8si, SI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (32, 2, 4, 16, vnx4x8si, SI, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (32, 2, 4, 16, vnx4x8si, SI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 32, 4, vnx16si, SI, __VA_ARGS__) \
+  MACRO (64, 2, 2, 32, vnx2x4di, DI, 32, 1, vnx4si, SI, __VA_ARGS__) \
+  MACRO (64, 2, 3, 32, vnx3x4di, DI, 32, 1, vnx4si, SI, __VA_ARGS__) \
+  MACRO (64, 2, 4, 32, vnx4x4di, DI, 32, 1, vnx4si, SI, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, vnx2x8di, DI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, vnx2x8di, DI, 32, 2, vnx8si, SI, __VA_ARGS__) \
+
+#define _RVV_SEG_INT_INDEX_64_ITERATOR_ARG(MACRO, ...) \
+  MACRO (8, 1, 2, 8, vnx2x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (8, 1, 3, 8, vnx3x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (8, 1, 4, 8, vnx4x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (8, 1, 5, 8, vnx5x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (8, 1, 6, 8, vnx6x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (8, 1, 7, 8, vnx7x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (8, 1, 8, 8, vnx8x16qi, QI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 2, 16, vnx2x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 3, 16, vnx3x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 4, 16, vnx4x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 5, 16, vnx5x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 6, 16, vnx6x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 7, 16, vnx7x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 8, 16, vnx8x8hi, HI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, vnx2x16hi, HI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, vnx3x16hi, HI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, vnx4x16hi, HI, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 2, 32, vnx2x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 3, 32, vnx3x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 4, 32, vnx4x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 5, 32, vnx5x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 6, 32, vnx6x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 7, 32, vnx7x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 8, 32, vnx8x4si, SI, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 2, 2, 16, vnx2x8si, SI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (32, 2, 3, 16, vnx3x8si, SI, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (32, 2, 4, 16, vnx4x8si, SI, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16si, SI, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (64, 1, 2, 64, vnx2x2di, DI, 64, 1, vnx2di, DI, __VA_ARGS__) \
   MACRO (64, 1, 3, 64, vnx3x2di, DI, 64, 1, vnx2di, DI, __VA_ARGS__) \
@@ -1497,14 +1510,9 @@
   MACRO (64, 1, 6, 64, vnx6x2di, DI, 64, 1, vnx2di, DI, __VA_ARGS__) \
   MACRO (64, 1, 7, 64, vnx7x2di, DI, 64, 1, vnx2di, DI, __VA_ARGS__) \
   MACRO (64, 1, 8, 64, vnx8x2di, DI, 64, 1, vnx2di, DI, __VA_ARGS__) \
-  MACRO (64, 2, 2, 32, vnx2x4di, DI, 32, 1, vnx4si, SI, __VA_ARGS__) \
   MACRO (64, 2, 2, 32, vnx2x4di, DI, 64, 2, vnx4di, DI, __VA_ARGS__) \
-  MACRO (64, 2, 3, 32, vnx3x4di, DI, 32, 1, vnx4si, SI, __VA_ARGS__) \
   MACRO (64, 2, 3, 32, vnx3x4di, DI, 64, 2, vnx4di, DI, __VA_ARGS__) \
-  MACRO (64, 2, 4, 32, vnx4x4di, DI, 32, 1, vnx4si, SI, __VA_ARGS__) \
   MACRO (64, 2, 4, 32, vnx4x4di, DI, 64, 2, vnx4di, DI, __VA_ARGS__) \
-  MACRO (64, 4, 2, 16, vnx2x8di, DI, 16, 1, vnx8hi, HI, __VA_ARGS__) \
-  MACRO (64, 4, 2, 16, vnx2x8di, DI, 32, 2, vnx8si, SI, __VA_ARGS__) \
   MACRO (64, 4, 2, 16, vnx2x8di, DI, 64, 4, vnx8di, DI, __VA_ARGS__) \
 
 /* An iterator to call a macro with every supported NF, SEW, LMUL and MLEN value,
@@ -1731,66 +1739,73 @@
 #define _RVV_SEG_FLOAT_INDEX_ITERATOR(MACRO) \
   MACRO (16, 1, 2, 16, vnx2x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 2, 16, vnx2x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 2, 16, vnx2x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 3, 16, vnx3x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 3, 16, vnx3x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 3, 16, vnx3x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 4, 16, vnx4x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 4, 16, vnx4x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 4, 16, vnx4x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 5, 16, vnx5x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 5, 16, vnx5x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 5, 16, vnx5x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 6, 16, vnx6x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 6, 16, vnx6x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 6, 16, vnx6x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 7, 16, vnx7x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 7, 16, vnx7x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 7, 16, vnx7x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 1, 8, 16, vnx8x8hf, HF, 16, 1, vnx8hi, HI) \
   MACRO (16, 1, 8, 16, vnx8x8hf, HF, 32, 2, vnx8si, SI) \
-  MACRO (16, 1, 8, 16, vnx8x8hf, HF, 64, 4, vnx8di, DI) \
   MACRO (16, 2, 2, 8, vnx2x16hf, HF, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 2, 8, vnx2x16hf, HF, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 2, 8, vnx2x16hf, HF, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 2, 8, vnx2x16hf, HF, 64, 8, vnx16di, DI) \
   MACRO (16, 2, 3, 8, vnx3x16hf, HF, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 3, 8, vnx3x16hf, HF, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 3, 8, vnx3x16hf, HF, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 3, 8, vnx3x16hf, HF, 64, 8, vnx16di, DI) \
   MACRO (16, 2, 4, 8, vnx4x16hf, HF, 8, 1, vnx16qi, QI) \
   MACRO (16, 2, 4, 8, vnx4x16hf, HF, 16, 2, vnx16hi, HI) \
   MACRO (16, 2, 4, 8, vnx4x16hf, HF, 32, 4, vnx16si, SI) \
-  MACRO (16, 2, 4, 8, vnx4x16hf, HF, 64, 8, vnx16di, DI) \
   MACRO (16, 4, 2, 4, vnx2x32hf, HF, 8, 2, vnx32qi, QI) \
   MACRO (16, 4, 2, 4, vnx2x32hf, HF, 16, 4, vnx32hi, HI) \
   MACRO (16, 4, 2, 4, vnx2x32hf, HF, 32, 8, vnx32si, SI) \
   MACRO (32, 1, 2, 32, vnx2x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 2, 32, vnx2x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 3, 32, vnx3x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 3, 32, vnx3x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 4, 32, vnx4x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 4, 32, vnx4x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 5, 32, vnx5x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 5, 32, vnx5x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 6, 32, vnx6x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 6, 32, vnx6x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 7, 32, vnx7x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 7, 32, vnx7x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 1, 8, 32, vnx8x4sf, SF, 32, 1, vnx4si, SI) \
-  MACRO (32, 1, 8, 32, vnx8x4sf, SF, 64, 2, vnx4di, DI) \
   MACRO (32, 2, 2, 16, vnx2x8sf, SF, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 2, 16, vnx2x8sf, SF, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 2, 16, vnx2x8sf, SF, 64, 4, vnx8di, DI) \
   MACRO (32, 2, 3, 16, vnx3x8sf, SF, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 3, 16, vnx3x8sf, SF, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 3, 16, vnx3x8sf, SF, 64, 4, vnx8di, DI) \
   MACRO (32, 2, 4, 16, vnx4x8sf, SF, 16, 1, vnx8hi, HI) \
   MACRO (32, 2, 4, 16, vnx4x8sf, SF, 32, 2, vnx8si, SI) \
-  MACRO (32, 2, 4, 16, vnx4x8sf, SF, 64, 4, vnx8di, DI) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 8, 1, vnx16qi, QI) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 16, 2, vnx16hi, HI) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 32, 4, vnx16si, SI) \
+  MACRO (64, 2, 2, 32, vnx2x4df, DF, 32, 1, vnx4si, SI) \
+  MACRO (64, 2, 3, 32, vnx3x4df, DF, 32, 1, vnx4si, SI) \
+  MACRO (64, 2, 4, 32, vnx4x4df, DF, 32, 1, vnx4si, SI) \
+  MACRO (64, 4, 2, 16, vnx2x8df, DF, 16, 1, vnx8hi, HI) \
+  MACRO (64, 4, 2, 16, vnx2x8df, DF, 32, 2, vnx8si, SI) \
+
+#define _RVV_SEG_FLOAT_INDEX_64_ITERATOR(MACRO) \
+  MACRO (16, 1, 2, 16, vnx2x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 3, 16, vnx3x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 4, 16, vnx4x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 5, 16, vnx5x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 6, 16, vnx6x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 7, 16, vnx7x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 1, 8, 16, vnx8x8hf, HF, 64, 4, vnx8di, DI) \
+  MACRO (16, 2, 2, 8, vnx2x16hf, HF, 64, 8, vnx16di, DI) \
+  MACRO (16, 2, 3, 8, vnx3x16hf, HF, 64, 8, vnx16di, DI) \
+  MACRO (16, 2, 4, 8, vnx4x16hf, HF, 64, 8, vnx16di, DI) \
+  MACRO (32, 1, 2, 32, vnx2x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 3, 32, vnx3x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 4, 32, vnx4x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 5, 32, vnx5x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 6, 32, vnx6x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 7, 32, vnx7x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 1, 8, 32, vnx8x4sf, SF, 64, 2, vnx4di, DI) \
+  MACRO (32, 2, 2, 16, vnx2x8sf, SF, 64, 4, vnx8di, DI) \
+  MACRO (32, 2, 3, 16, vnx3x8sf, SF, 64, 4, vnx8di, DI) \
+  MACRO (32, 2, 4, 16, vnx4x8sf, SF, 64, 4, vnx8di, DI) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 64, 8, vnx16di, DI) \
   MACRO (64, 1, 2, 64, vnx2x2df, DF, 64, 1, vnx2di, DI) \
   MACRO (64, 1, 3, 64, vnx3x2df, DF, 64, 1, vnx2di, DI) \
@@ -1799,80 +1814,82 @@
   MACRO (64, 1, 6, 64, vnx6x2df, DF, 64, 1, vnx2di, DI) \
   MACRO (64, 1, 7, 64, vnx7x2df, DF, 64, 1, vnx2di, DI) \
   MACRO (64, 1, 8, 64, vnx8x2df, DF, 64, 1, vnx2di, DI) \
-  MACRO (64, 2, 2, 32, vnx2x4df, DF, 32, 1, vnx4si, SI) \
   MACRO (64, 2, 2, 32, vnx2x4df, DF, 64, 2, vnx4di, DI) \
-  MACRO (64, 2, 3, 32, vnx3x4df, DF, 32, 1, vnx4si, SI) \
   MACRO (64, 2, 3, 32, vnx3x4df, DF, 64, 2, vnx4di, DI) \
-  MACRO (64, 2, 4, 32, vnx4x4df, DF, 32, 1, vnx4si, SI) \
   MACRO (64, 2, 4, 32, vnx4x4df, DF, 64, 2, vnx4di, DI) \
-  MACRO (64, 4, 2, 16, vnx2x8df, DF, 16, 1, vnx8hi, HI) \
-  MACRO (64, 4, 2, 16, vnx2x8df, DF, 32, 2, vnx8si, SI) \
   MACRO (64, 4, 2, 16, vnx2x8df, DF, 64, 4, vnx8di, DI) \
 
 /* Same as above but with an extra argument.  */
 #define _RVV_SEG_FLOAT_INDEX_ITERATOR_ARG(MACRO, ...) \
   MACRO (16, 1, 2, 16, vnx2x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 2, 16, vnx2x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 2, 16, vnx2x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 3, 16, vnx3x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 3, 16, vnx3x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 3, 16, vnx3x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 4, 16, vnx4x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 4, 16, vnx4x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 4, 16, vnx4x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 5, 16, vnx5x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 5, 16, vnx5x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 5, 16, vnx5x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 6, 16, vnx6x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 6, 16, vnx6x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 6, 16, vnx6x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 7, 16, vnx7x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 7, 16, vnx7x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 7, 16, vnx7x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 1, 8, 16, vnx8x8hf, HF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (16, 1, 8, 16, vnx8x8hf, HF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (16, 1, 8, 16, vnx8x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (16, 2, 2, 8, vnx2x16hf, HF, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (16, 2, 2, 8, vnx2x16hf, HF, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (16, 2, 2, 8, vnx2x16hf, HF, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (16, 2, 2, 8, vnx2x16hf, HF, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (16, 2, 3, 8, vnx3x16hf, HF, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (16, 2, 3, 8, vnx3x16hf, HF, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (16, 2, 3, 8, vnx3x16hf, HF, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (16, 2, 3, 8, vnx3x16hf, HF, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (16, 2, 4, 8, vnx4x16hf, HF, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (16, 2, 4, 8, vnx4x16hf, HF, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (16, 2, 4, 8, vnx4x16hf, HF, 32, 4, vnx16si, SI, __VA_ARGS__) \
-  MACRO (16, 2, 4, 8, vnx4x16hf, HF, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (16, 4, 2, 4, vnx2x32hf, HF, 8, 2, vnx32qi, QI, __VA_ARGS__) \
   MACRO (16, 4, 2, 4, vnx2x32hf, HF, 16, 4, vnx32hi, HI, __VA_ARGS__) \
   MACRO (16, 4, 2, 4, vnx2x32hf, HF, 32, 8, vnx32si, SI, __VA_ARGS__) \
   MACRO (32, 1, 2, 32, vnx2x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 2, 32, vnx2x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 3, 32, vnx3x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 3, 32, vnx3x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 4, 32, vnx4x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 4, 32, vnx4x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 5, 32, vnx5x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 5, 32, vnx5x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 6, 32, vnx6x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 6, 32, vnx6x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 7, 32, vnx7x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 7, 32, vnx7x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 1, 8, 32, vnx8x4sf, SF, 32, 1, vnx4si, SI, __VA_ARGS__) \
-  MACRO (32, 1, 8, 32, vnx8x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
   MACRO (32, 2, 2, 16, vnx2x8sf, SF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (32, 2, 2, 16, vnx2x8sf, SF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (32, 2, 2, 16, vnx2x8sf, SF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 2, 3, 16, vnx3x8sf, SF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (32, 2, 3, 16, vnx3x8sf, SF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (32, 2, 3, 16, vnx3x8sf, SF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 2, 4, 16, vnx4x8sf, SF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
   MACRO (32, 2, 4, 16, vnx4x8sf, SF, 32, 2, vnx8si, SI, __VA_ARGS__) \
-  MACRO (32, 2, 4, 16, vnx4x8sf, SF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 8, 1, vnx16qi, QI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 16, 2, vnx16hi, HI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 32, 4, vnx16si, SI, __VA_ARGS__) \
+  MACRO (64, 2, 2, 32, vnx2x4df, DF, 32, 1, vnx4si, SI, __VA_ARGS__) \
+  MACRO (64, 2, 3, 32, vnx3x4df, DF, 32, 1, vnx4si, SI, __VA_ARGS__) \
+  MACRO (64, 2, 4, 32, vnx4x4df, DF, 32, 1, vnx4si, SI, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, vnx2x8df, DF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
+  MACRO (64, 4, 2, 16, vnx2x8df, DF, 32, 2, vnx8si, SI, __VA_ARGS__) \
+
+#define _RVV_SEG_FLOAT_INDEX_64_ITERATOR_ARG(MACRO, ...) \
+  MACRO (16, 1, 2, 16, vnx2x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 3, 16, vnx3x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 4, 16, vnx4x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 5, 16, vnx5x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 6, 16, vnx6x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 7, 16, vnx7x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 1, 8, 16, vnx8x8hf, HF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (16, 2, 2, 8, vnx2x16hf, HF, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (16, 2, 3, 8, vnx3x16hf, HF, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (16, 2, 4, 8, vnx4x16hf, HF, 64, 8, vnx16di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 2, 32, vnx2x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 3, 32, vnx3x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 4, 32, vnx4x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 5, 32, vnx5x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 6, 32, vnx6x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 7, 32, vnx7x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 1, 8, 32, vnx8x4sf, SF, 64, 2, vnx4di, DI, __VA_ARGS__) \
+  MACRO (32, 2, 2, 16, vnx2x8sf, SF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (32, 2, 3, 16, vnx3x8sf, SF, 64, 4, vnx8di, DI, __VA_ARGS__) \
+  MACRO (32, 2, 4, 16, vnx4x8sf, SF, 64, 4, vnx8di, DI, __VA_ARGS__) \
   MACRO (32, 4, 2, 8, vnx2x16sf, SF, 64, 8, vnx16di, DI, __VA_ARGS__) \
   MACRO (64, 1, 2, 64, vnx2x2df, DF, 64, 1, vnx2di, DI, __VA_ARGS__) \
   MACRO (64, 1, 3, 64, vnx3x2df, DF, 64, 1, vnx2di, DI, __VA_ARGS__) \
@@ -1881,14 +1898,9 @@
   MACRO (64, 1, 6, 64, vnx6x2df, DF, 64, 1, vnx2di, DI, __VA_ARGS__) \
   MACRO (64, 1, 7, 64, vnx7x2df, DF, 64, 1, vnx2di, DI, __VA_ARGS__) \
   MACRO (64, 1, 8, 64, vnx8x2df, DF, 64, 1, vnx2di, DI, __VA_ARGS__) \
-  MACRO (64, 2, 2, 32, vnx2x4df, DF, 32, 1, vnx4si, SI, __VA_ARGS__) \
   MACRO (64, 2, 2, 32, vnx2x4df, DF, 64, 2, vnx4di, DI, __VA_ARGS__) \
-  MACRO (64, 2, 3, 32, vnx3x4df, DF, 32, 1, vnx4si, SI, __VA_ARGS__) \
   MACRO (64, 2, 3, 32, vnx3x4df, DF, 64, 2, vnx4di, DI, __VA_ARGS__) \
-  MACRO (64, 2, 4, 32, vnx4x4df, DF, 32, 1, vnx4si, SI, __VA_ARGS__) \
   MACRO (64, 2, 4, 32, vnx4x4df, DF, 64, 2, vnx4di, DI, __VA_ARGS__) \
-  MACRO (64, 4, 2, 16, vnx2x8df, DF, 16, 1, vnx8hi, HI, __VA_ARGS__) \
-  MACRO (64, 4, 2, 16, vnx2x8df, DF, 32, 2, vnx8si, SI, __VA_ARGS__) \
   MACRO (64, 4, 2, 16, vnx2x8df, DF, 64, 4, vnx8di, DI, __VA_ARGS__) \
 
 /* An iterator to call a macro with every supported NF, SEW, LMUL and MLEN value,

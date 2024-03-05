@@ -1001,6 +1001,39 @@
     }
 })
 
+(define_expand "vec_store_di_to_<mode>_rv32"
+  [(parallel [(set (match_operand:VIMODES 0 "register_operand")
+		   (unspec:VIMODES
+		     [(vec_duplicate:VIMODES
+			  (match_operand:<VSUBMODE> 1 "register_operand"))
+		      (reg:SI VL_REGNUM)]
+		    UNSPEC_USEVL))
+	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
+  "TARGET_VECTOR && !TARGET_64BIT"
+{
+  if (GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx insn, dwarf;
+      int mode_size = GET_MODE_SIZE (<VSUBMODE>mode);
+      insn = gen_add3_insn (stack_pointer_rtx,
+			    stack_pointer_rtx, GEN_INT (-mode_size));
+      dwarf = alloc_reg_note (REG_FRAME_RELATED_EXPR, copy_rtx (insn), NULL_RTX);
+      REG_NOTES (emit_insn (insn)) = dwarf;
+
+      emit_move_insn (gen_tmp_stack_mem (<VSUBMODE>mode, stack_pointer_rtx), operands[1]);
+
+      emit_insn (gen_vlse<mode>_si (operands[0], stack_pointer_rtx, gen_rtx_REG (Pmode, 0)));
+
+      insn = gen_add3_insn (stack_pointer_rtx,
+			    stack_pointer_rtx, GEN_INT (mode_size));
+      dwarf = alloc_reg_note (REG_FRAME_RELATED_EXPR, copy_rtx (insn), NULL_RTX);
+      REG_NOTES (emit_insn (insn)) = dwarf;
+      DONE;
+    }
+  else
+    FAIL;
+})
+
 ;; move pattern for vector masking type.
 (define_insn "*mov<mode>"
   [(set (match_operand:VMASKMODES 0 "reg_or_mem_operand"  "=vr,vr, m")
@@ -1027,7 +1060,41 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+    if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+      {
+	rtx tmp_reg1 = gen_reg_rtx (<VSUBMODE>mode);
+	emit_move_insn (tmp_reg1, gen_int_mode (32, <VSUBMODE>mode));
+
+	rtx tmp_reg2 = gen_reg_rtx (<MODE>mode);
+	emit_insn (gen_vlshr<mode>3_scalar (tmp_reg2, operands[1], tmp_reg1));
+
+	rtx lo = gen_lowpart (SImode, operands[0]);
+	emit_insn (gen_vec_extract<mode>_nosetvl_rv32_si (lo, operands[1]));
+
+	rtx high = gen_highpart (SImode, operands[0]);
+	emit_insn (gen_vec_extract<mode>_nosetvl_rv32_si (high, tmp_reg2));
+
+	DONE;
+      }
+
+    emit_insn (gen_vec_extract<mode>_nosetvl (operands[0], operands[1]));
+    DONE;
 })
+
+(define_insn "vec_extract<mode>_nosetvl_rv32_si"
+  [(set (match_operand:SI 0 "register_operand" "=r")
+	(unspec:SI
+	  [(vec_select:<VSUBMODE>
+	     (match_operand:VIMODES 1 "register_operand" "vr")
+	     (parallel [(const_int 0)]))
+	   (reg:SI VL_REGNUM)]
+	 UNSPEC_USEVL))
+   (use (reg:<VLMODE> VTYPE_REGNUM))]
+  "TARGET_VECTOR & !TARGET_64BIT"
+  "vmv.x.s\t%0,%1"
+  [(set_attr "type" "vmove")
+   (set_attr "mode" "none")
+   (set_attr "emode" "<VSUBMODE>")])
 
 (define_insn "vec_extract<mode>_nosetvl"
   [(set (match_operand:<VSUBMODE> 0 "register_operand" "=r")
@@ -1057,7 +1124,29 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+    if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+      {
+	rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+	emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+
+	rtx tmp_reg3 = gen_reg_rtx (<MODE>mode);
+	emit_insn (gen_vid<mode> (tmp_reg3));
+
+	rtx tmp_reg4 = gen_reg_rtx (<VCMPEQUIV>mode);
+
+	rtx tmp_reg5 = gen_reg_rtx (<VSUBMODE>mode);
+	emit_move_insn (tmp_reg5, const0_rtx);
+
+	emit_insn (gen_seq<mode>_scalar (tmp_reg4, tmp_reg3, tmp_reg5));
+
+	emit_insn (gen_mov<mode>cc_nosetvl(operands[0], operands[0], tmp_reg, tmp_reg4));
+	DONE;
+      }
+
+    emit_insn (gen_vec_set<mode>_nosetvl (operands[0], operands[1], operands[2]));
+    DONE;
 })
+
 
 (define_insn "vec_set<mode>_nosetvl"
   [(set (match_operand:VIMODES 0 "register_operand" "=vr")
@@ -1183,6 +1272,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<optab><mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_nosetvl"
@@ -1252,6 +1348,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<optab><mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_mask_nosetvl"
@@ -1348,6 +1451,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<optab><mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_nosetvl"
@@ -1415,6 +1525,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<optab><mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_mask_nosetvl"
@@ -1476,6 +1593,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_sub<mode>3 (operands[0], tmp_reg, operands[1]));
+      DONE;
+    }
 })
 
 (define_insn "*rsub<mode>3_scalar_nosetvl"
@@ -1543,6 +1667,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_sub<mode>3_mask (operands[0], operands[1], operands[2], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*rsub<mode>3_scalar_mask_nosetvl"
@@ -1608,6 +1739,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<optab><mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_nosetvl"
@@ -1677,6 +1815,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<optab><mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_mask_nosetvl"
@@ -1873,6 +2018,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_adc<mode>4 (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*adc<mode>4_scalar_nosetvl"
@@ -1959,6 +2111,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_madc<mode>4m (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*madc<mode>4m_scalar_nosetvl"
@@ -2032,6 +2191,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_madc<mode>4 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*madc<mode>4_scalar_nosetvl"
@@ -2107,6 +2273,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_sbc<mode>4 (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*sbc<mode>4_scalar_nosetvl"
@@ -2191,6 +2364,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_msbc<mode>4m (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*msbc<mode>4m_scalar_nosetvl"
@@ -2262,6 +2442,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_msbc<mode>4 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*msbc<mode>4_scalar_nosetvl"
@@ -3612,6 +3799,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_mul<mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*mul<mode>3_scalar_nosetvl"
@@ -3679,6 +3873,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_mul<mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*mul<mode>3_scalar_mask_nosetvl"
@@ -3815,6 +4016,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<su>mul<mode>3_highpart (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*<su>mul<mode>3_highpart_scalar_nosetvl"
@@ -3855,6 +4063,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_sumul<mode>3_highpart (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*sumul<mode>3_highpart_scalar_nosetvl"
@@ -4032,6 +4247,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<su>mul<mode>3_highpart_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg, operands[5]));
+      DONE;
+    }
 })
 
 (define_insn "*<su>mul<mode>3_highpart_scalar_mask_nosetvl"
@@ -4078,6 +4300,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_sumul<mode>3_highpart_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg, operands[5]));
+      DONE;
+    }
 })
 
 (define_insn "*sumul<mode>3_highpart_scalar_mask_nosetvl"
@@ -5424,6 +5653,7 @@
   if (ltge_operator (operands[1], <VCMPEQUIV>mode)
       && !ltge_vector_arith_operand(operands[3], <MODE>mode))
     FAIL;
+
 })
 
 (define_insn "*vec_cmp<mode><vmaskmode>_nosetvl"
@@ -5477,6 +5707,7 @@
   if (ltge_operator (operands[1], <VCMPEQUIV>mode)
       && !ltge_vector_arith_operand(operands[3], <MODE>mode))
     FAIL;
+
 })
 
 (define_insn "*vec_cmp<mode><vmaskmode>_mask_nosetvl"
@@ -5727,6 +5958,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
  "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[3]));
+      emit_insn (gen_mov<mode>cc (operands[0], operands[1], operands[2], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "mov<mode>cc_scalar_nosetvl"
@@ -6308,10 +6546,35 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<icmp><mode> (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 ;; We don't have compare with grater then.
 ;; Using vmslt and vmnand to replace it.
+(define_expand "sge<u><mode>_scalar_rv32"
+  [(parallel [(set (match_operand:<VCMPEQUIV> 0 "register_operand")
+		   (unspec:<VCMPEQUIV>
+		     [(any_lt:<VCMPEQUIV>
+			(match_operand:VIMODES 1 "register_operand")
+			(match_operand:VIMODES 2 "register_operand"))
+		      (reg:SI VL_REGNUM)]
+		    UNSPEC_USEVL))
+	      (use (reg:<VLMODE> VTYPE_REGNUM))])
+   (set (match_dup 0)
+	(unspec:<VCMPEQUIV>
+	  [(not:<VCMPEQUIV> (and:<VCMPEQUIV> (match_dup 0) (match_dup 0)))
+	   (reg:SI VL_REGNUM)]
+	 UNSPEC_USEVL))]
+  "TARGET_VECTOR && !TARGET_64BIT"
+{
+})
+
 (define_expand "sge<u><mode>_scalar"
   [(parallel [(set (match_operand:<VCMPEQUIV> 0 "register_operand")
 		   (unspec:<VCMPEQUIV>
@@ -6329,10 +6592,33 @@
 	 UNSPEC_USEVL))]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_sge<u><mode>_scalar_rv32 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 ;; We don't have compare with grater then.
 ;; Using vmslt and vmxor to replace it.
+(define_expand "<icmp><mode>_scalar_mask_rv32"
+  [(parallel [(set (match_operand:<VCMPEQUIV> 0 "register_operand")
+		   (unspec:<VCMPEQUIV>
+		     [(if_then_else:<VCMPEQUIV>
+			(match_operand:<VCMPEQUIV> 1 "register_operand")
+			(cmp_except_ge:<VCMPEQUIV>
+			  (match_operand:VIMODES 3 "register_operand")
+			  (match_operand:VIMODES 4 "register_operand"))
+			(match_operand:<VCMPEQUIV> 2 "register_operand"))
+		      (reg:SI VL_REGNUM)]
+		    UNSPEC_USEVL))
+	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
+  "TARGET_VECTOR && !TARGET_64BIT"
+{
+})
+
 (define_expand "<icmp><mode>_scalar_mask"
   [(parallel [(set (match_operand:<VCMPEQUIV> 0 "register_operand")
 		   (unspec:<VCMPEQUIV>
@@ -6347,6 +6633,34 @@
 		    UNSPEC_USEVL))
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
+{
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<icmp><mode>_scalar_mask_rv32 (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
+})
+
+(define_expand "sge<u><mode>_scalar_mask_rv32"
+  [(parallel [(set (match_operand:<VCMPEQUIV> 0 "register_operand")
+		   (unspec:<VCMPEQUIV>
+		     [(if_then_else:<VCMPEQUIV>
+			(match_operand:<VCMPEQUIV> 1 "register_operand")
+			(any_lt:<VCMPEQUIV>
+			  (match_operand:VIMODES 3 "register_operand")
+			  (match_operand:VIMODES 4 "register_operand"))
+			(match_operand:<VCMPEQUIV> 2 "register_operand"))
+		      (reg:SI VL_REGNUM)]
+		    UNSPEC_USEVL))
+	      (use (reg:<VLMODE> VTYPE_REGNUM))])
+   (set (match_dup 0)
+	(unspec:<VCMPEQUIV>
+	  [(xor:<VCMPEQUIV> (match_dup 0) (match_dup 1))
+	   (reg:SI VL_REGNUM)]
+	 UNSPEC_USEVL))]
+  "TARGET_VECTOR && !TARGET_64BIT"
 {
 })
 
@@ -6370,6 +6684,13 @@
 	 UNSPEC_USEVL))]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_sge<u><mode>_scalar_mask_rv32 (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 ;; FP compare functions
@@ -6686,7 +7007,7 @@
    (use (reg:<VLMODE> VTYPE_REGNUM))]
   "TARGET_VECTOR"
   { return (target_subset_version_p ("v", 0, 7) && !strcmp ("<order>", "u")) ? "vfredsum.vs\t%0,%3,%2" : "vfred<order>sum.vs\t%0,%3,%2"; }
-  [(set_attr "type" "vfred")
+  [(set_attr "type" "vfred<order>")
    (set_attr "mode" "none")
    (set_attr "emode" "<VSUBMODE>")])
 
@@ -6724,7 +7045,7 @@
    (use (reg:<VLMODE> VTYPE_REGNUM))]
   "TARGET_VECTOR"
   { return (target_subset_version_p ("v", 0, 7) && !strcmp ("<order>", "u")) ? "vfredsum.vs\t%0,%4,%3,%1.t" : "vfred<order>sum.vs\t%0,%4,%3,%1.t"; }
-  [(set_attr "type" "vfred")
+  [(set_attr "type" "vfred<order>")
    (set_attr "mode" "none")
    (set_attr "emode" "<VSUBMODE>")])
 
@@ -6758,7 +7079,7 @@
    (use (reg:<VLMODE> VTYPE_REGNUM))]
   "TARGET_VECTOR"
   { return (target_subset_version_p ("v", 0, 7) && !strcmp ("<order>", "u")) ? "vfwredsum.vs\t%0,%3,%2" : "vfwred<order>sum.vs\t%0,%3,%2"; }
-  [(set_attr "type" "vfred")
+  [(set_attr "type" "vfwred")
    (set_attr "mode" "none")
    (set_attr "emode" "<VSUBMODE>")])
 
@@ -6792,7 +7113,7 @@
    (use (reg:<VLMODE> VTYPE_REGNUM))]
   "TARGET_VECTOR"
   { return (target_subset_version_p ("v", 0, 7) && !strcmp ("<order>", "u")) ? "vfwredsum.vs\t%0,%4,%3,%1.t" : "vfwred<order>sum.vs\t%0,%4,%3,%1.t"; }
-  [(set_attr "type" "vfred")
+  [(set_attr "type" "vfwred")
    (set_attr "mode" "none")
    (set_attr "emode" "<VSUBMODE>")])
 
@@ -7253,6 +7574,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<minmax><mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<minmax><mode>3_scalar_nosetvl"
@@ -7320,6 +7648,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<minmax><mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<minmax><mode>3_scalar_mask_nosetvl"
@@ -7383,6 +7718,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<optab><mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 ;; XXX: No divide instruction with vector-scalar,
@@ -7453,6 +7795,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<optab><mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<optab><mode>3_scalar_mask_nosetvl"
@@ -7847,6 +8196,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_v<vmadd_sub><mode> (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*v<vmadd_sub><mode>_scalar_nosetvl"
@@ -7881,6 +8237,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_v<vmac><mode> (operands[0], operands[1], tmp_reg, operands[3]));
+      DONE;
+    }
 })
 
 (define_insn "*v<vmac><mode>_scalar_nosetvl"
@@ -7951,6 +8314,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[3]));
+      emit_insn (gen_<imac><mode>_mask (operands[0], operands[1], operands[2], tmp_reg, operands[4]));
+      DONE;
+    }
 })
 
 (define_insn "*<imac><mode>_scalar_mask_nosetvl"
@@ -9636,26 +10006,51 @@
    (set_attr "mode" "none")
    (set_attr "emode" "<VSUBMODE>")])
 
-(define_expand "vslide1<ud><VIMODES:mode><X:mode>"
+(define_expand "vslide1<ud><VIMODES:mode>"
   [(parallel [(set (match_operand:VIMODES 0 "register_operand")
 		   (unspec:VIMODES
 		     [(unspec:VIMODES
 			[(match_operand:VIMODES 1 "register_operand")
-			 (match_operand:X 2 "register_operand")]
+			 (match_operand:<VSUBMODE> 2 "register_operand")]
 		       UNSPEC_VSLIDES1)
 		      (reg:SI VL_REGNUM)]
 		    UNSPEC_USEVL))
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+    if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+      {
+	rtx tmp_reg1 = gen_reg_rtx (Pmode);
+	rtx tmp_reg2 = gen_rtx_REG (Pmode, 0);
+
+	emit_insn (gen_riscv_vsetvl32m<xlmul>_si(tmp_reg1, tmp_reg2));
+
+	rtx lo = gen_lowpart (SImode, operands[2]);
+	rtx high = gen_highpart (SImode, operands[2]);
+
+	rtx tmp_reg3 = gen_reg_rtx (GET_MODE(operands[0]));
+
+	if((strncmp ("<ud>", "up", 2 ) == 0))
+	  {
+	    emit_insn (gen_vslide1up<mode>si_nosetvl(tmp_reg3, operands[1], high));
+	    emit_insn (gen_vslide1up<mode>si_nosetvl(operands[0], tmp_reg3, lo));
+	  }
+	else
+	  {
+	    emit_insn (gen_vslide1down<mode>si_nosetvl(tmp_reg3, operands[1], lo));
+	    emit_insn (gen_vslide1down<mode>si_nosetvl(operands[0], tmp_reg3, high));
+	  }
+	emit_insn (gen_riscv_vsetvl64m<xlmul>_si(tmp_reg1, tmp_reg2));
+	DONE;
+      }
 })
 
-(define_insn "*vslide1<ud><VIMODES:mode><X:mode>_nosetvl"
+(define_insn "vslide1<ud><VIMODES:mode><ANYI:mode>_nosetvl"
   [(set (match_operand:VIMODES 0 "register_operand" "=&vr")
 	(unspec:VIMODES
 	  [(unspec:VIMODES
 	     [(match_operand:VIMODES 1 "register_operand" "vr")
-	      (match_operand:X 2 "register_operand" "r")]
+	      (match_operand:ANYI 2 "register_operand" "r")]
 	    UNSPEC_VSLIDES1)
 	   (reg:SI VL_REGNUM)]
 	 UNSPEC_USEVL))
@@ -9666,14 +10061,14 @@
    (set_attr "mode" "none")
    (set_attr "emode" "<VSUBMODE>")])
 
-(define_expand "vslide1<ud><VIMODES:mode><X:mode>_mask"
+(define_expand "vslide1<ud><VIMODES:mode>_mask"
   [(parallel [(set (match_operand:VIMODES 0 "register_operand")
 		   (unspec:VIMODES
 		     [(if_then_else:VIMODES
 			(match_operand:<VCMPEQUIV> 1 "register_operand")
 			(unspec:VIMODES
 			  [(match_operand:VIMODES 3 "register_operand")
-			   (match_operand:X 4 "register_operand")]
+			   (match_operand:<VSUBMODE> 4 "register_operand")]
 			 UNSPEC_VSLIDES1)
 			(match_operand:VIMODES 2 "register_operand"))
 		      (reg:SI VL_REGNUM)]
@@ -9681,16 +10076,22 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+    if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+      {
+	emit_insn (gen_vslide1<ud><mode>(operands[3], operands[3], operands[4]));
+	emit_insn (gen_mov<mode>cc_nosetvl(operands[0], operands[2], operands[3], operands[1]));
+	DONE;
+      }
 })
 
-(define_insn "*vslide1<ud><VIMODES:mode><X:mode>_mask_nosetvl"
+(define_insn "vslide1<ud><VIMODES:mode><ANYI:mode>_mask_nosetvl"
   [(set (match_operand:VIMODES 0 "register_operand" "=&vr")
 	(unspec:VIMODES
 	  [(if_then_else:VIMODES
 	     (match_operand:<VCMPEQUIV> 1 "register_operand" "vm")
 	     (unspec:VIMODES
 	       [(match_operand:VIMODES 3 "register_operand" "vr")
-		(match_operand:X 4 "register_operand" "r")]
+		(match_operand:ANYI 4 "register_operand" "r")]
 	      UNSPEC_VSLIDES1)
 	     (match_operand:VIMODES 2 "register_operand" "0"))
 	   (reg:SI VL_REGNUM)]
@@ -10355,6 +10756,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[2]));
+      emit_insn (gen_<sat_op><mode>3 (operands[0], operands[1], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<sat_op><mode>3_scalar_nosetvl"
@@ -10426,6 +10834,13 @@
 	      (use (reg:<VLMODE> VTYPE_REGNUM))])]
   "TARGET_VECTOR"
 {
+  if (!TARGET_64BIT && GET_MODE_SIZE (<VSUBMODE>mode) > GET_MODE_SIZE (SImode))
+    {
+      rtx tmp_reg = gen_reg_rtx (<MODE>mode);
+      emit_insn (gen_vec_store_di_to_<mode>_rv32 (tmp_reg, operands[4]));
+      emit_insn (gen_<sat_op><mode>3_mask (operands[0], operands[1], operands[2], operands[3], tmp_reg));
+      DONE;
+    }
 })
 
 (define_insn "*<sat_op><mode>3_scalar_mask_nosetvl"

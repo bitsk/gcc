@@ -128,7 +128,7 @@
 (define_expand "clzsi2"
   [(set (match_operand:SI 0 "register_operand" "=r")
 	(clz:SI (match_operand:SI 1 "register_operand" "r")))]
-  "TARGET_ZBB || (!TARGET_64BIT && TARGET_XTHEAD_ZPN)"
+  "TARGET_ZBB || TARGET_XTHEAD_ZPN"
   ""
 )
 

@@ -482,6 +482,9 @@ mode_for_vector (scalar_mode innermode, poly_uint64 nunits)
 {
   machine_mode mode;
 
+  if (targetm.vectorize_matched_mode)
+    return targetm.vectorize_matched_mode (innermode, nunits);
+
   /* First, look for a supported vector type.  */
   if (SCALAR_FLOAT_MODE_P (innermode))
     mode = MIN_MODE_VECTOR_FLOAT;

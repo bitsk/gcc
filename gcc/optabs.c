@@ -5003,20 +5003,35 @@ expand_fix (rtx to, rtx from, int unsignedp)
 	if (icode != CODE_FOR_nothing)
 	  {
 	    rtx_insn *last = get_last_insn ();
+	    rtx from1 = from;
 	    if (fmode != GET_MODE (from))
-	      from = convert_to_mode (fmode, from, 0);
+	      {
+		if (REAL_MODE_FORMAT (GET_MODE (from))
+		    == &arm_bfloat_half_format
+		    && REAL_MODE_FORMAT (fmode) == &ieee_single_format)
+		  /* The BF -> SF conversions can be just a shift, doesn't
+		     need to handle sNANs.  */
+		  {
+		    int save_flag_finite_math_only = flag_finite_math_only;
+		    flag_finite_math_only = true;
+		    from1 = convert_to_mode (fmode, from, 0);
+		    flag_finite_math_only = save_flag_finite_math_only;
+		  }
+		else
+		  from1 = convert_to_mode (fmode, from, 0);
+	      }
 
 	    if (must_trunc)
 	      {
-		rtx temp = gen_reg_rtx (GET_MODE (from));
-		from = expand_unop (GET_MODE (from), ftrunc_optab, from,
-				    temp, 0);
+		rtx temp = gen_reg_rtx (GET_MODE (from1));
+		from1 = expand_unop (GET_MODE (from1), ftrunc_optab, from1,
+				     temp, 0);
 	      }
 
 	    if (imode != GET_MODE (to))
 	      target = gen_reg_rtx (imode);
 
-	    if (maybe_emit_unop_insn (icode, target, from,
+	    if (maybe_emit_unop_insn (icode, target, from1,
 				      doing_unsigned ? UNSIGNED_FIX : FIX))
 	      {
 		if (target != to)
@@ -5076,7 +5091,21 @@ expand_fix (rtx to, rtx from, int unsignedp)
 	    lab2 = gen_label_rtx ();
 
 	    if (fmode != GET_MODE (from))
-	      from = convert_to_mode (fmode, from, 0);
+	      {
+		if (REAL_MODE_FORMAT (GET_MODE (from))
+		    == &arm_bfloat_half_format
+		    && REAL_MODE_FORMAT (fmode) == &ieee_single_format)
+		  /* The BF -> SF conversions can be just a shift, doesn't
+		     need to handle sNANs.  */
+		  {
+		    int save_flag_finite_math_only = flag_finite_math_only;
+		    flag_finite_math_only = true;
+		    from = convert_to_mode (fmode, from, 0);
+		    flag_finite_math_only = save_flag_finite_math_only;
+		  }
+		else
+		  from = convert_to_mode (fmode, from, 0);
+	      }
 
 	    /* See if we need to do the subtraction.  */
 	    do_pending_stack_adjust ();
@@ -5119,6 +5148,22 @@ expand_fix (rtx to, rtx from, int unsignedp)
 	    return;
 	  }
       }
+
+#ifdef HAVE_SFmode
+  if (REAL_MODE_FORMAT (GET_MODE (from)) == &arm_bfloat_half_format
+      && REAL_MODE_FORMAT (SFmode) == &ieee_single_format)
+    /* We don't have BF -> TI library functions, use BF -> SF -> TI
+       instead but the BF -> SF conversion can be just a shift, doesn't
+       need to handle sNANs.  */
+    {
+      int save_flag_finite_math_only = flag_finite_math_only;
+      flag_finite_math_only = true;
+      from = convert_to_mode (SFmode, from, 0);
+      flag_finite_math_only = save_flag_finite_math_only;
+      expand_fix (to, from, unsignedp);
+      return;
+    }
+#endif
 
   /* We can't do it with an insn, so use a library call.  But first ensure
      that the mode of TO is at least as wide as SImode, since those are the

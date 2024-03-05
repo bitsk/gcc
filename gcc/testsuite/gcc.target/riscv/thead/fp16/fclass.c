@@ -1,6 +1,6 @@
 /* { dg-do assemble } */
-/* { dg-skip-if "test float16 insns" { *-*-* } { "*" } { "-march=*zfh*" } } */
-/* { dg-options "--save-temps" } */
+/* { dg-skip-if "test float16 insns" { *-*-* } { "-march=*zfa*" } { "" } } */
+/* { dg-options "-march=rv64gc_zfh_xtheadc -mabi=lp64d --save-temps" } */
 
 /* Copy from gcc.dg/torture/float16-tg-3.c */
 volatile _Float16 negtrue_min = -5.96046447753906250000000000000000000e-8F16;

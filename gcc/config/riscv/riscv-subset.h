@@ -90,6 +90,8 @@ public:
   const riscv_subset_t *end () const {return NULL;};
 
   void thead_specific_work ();
+
+  int match_score (riscv_subset_list *) const;
 };
 
 extern const riscv_subset_list *riscv_current_subset_list (void);
